@@ -40,7 +40,7 @@ Installation and Update
 -----------------------
 Install the plugin, like any other plugin, to the following folder:
 
-    /local/upload_enrolment_methods
+    /local/uploadenrolmentmethods
 
 See http://docs.moodle.org/33/en/Installing_plugins for details on installing Moodle plugins.
 
