@@ -67,21 +67,9 @@ admin_externalpage_setup('local_'.$pluginname); // Sets the navbar & expands nav
 
 // Setup the form.
 
-$CFG->noreplyaddress = empty($CFG->noreplyaddress) ? 'noreply@' . get_host_from_url($CFG->wwwroot) : $CFG->noreplyaddress;
 
-if (!empty($CFG->emailonlyfromnoreplyaddress) || $CFG->branch >= 32) { // Always send from no reply address.
-    // Use primary administrator's name if support name has not been configured.
-    $primaryadmin = get_admin();
-    $CFG->supportname = empty($CFG->supportname) ? fullname($primaryadmin, true) : $CFG->supportname;
-    // Use noreply address.
-    $fromemail = local_uploadenrolmentmethods_generate_email_user($CFG->noreplyaddress, format_string($CFG->supportname));
-    $fromdefault = $CFG->noreplyaddress;
-} else { // Otherwise defaults to send from primary admin user.
-    $fromemail = get_admin();
-    $fromdefault = $fromemail->email;
-}
 
-$form = new uploadenrolmentmethods_form(null, array('fromdefault' => $fromdefault));
+$form = new uploadenrolmentmethods_form(null, array('fromdefault' => ''));
 if ($form->is_cancelled()) {
     redirect($homeurl);
 }
@@ -95,121 +83,26 @@ if (!$data) { // Display the form.
 
     echo $OUTPUT->heading($heading);
 
-    // Display a warning if Cron hasn't run in a while. =============.
-    if ($CFG->branch >= 27) { // Moodle 2.7+.
-        $sql = 'SELECT MAX(lastruntime) FROM {task_scheduled}';
-    } else {
-        $sql = 'SELECT MAX(lastcron) FROM {modules}';
-    }
-    $cronlastrun = $DB->get_field_sql($sql);
-    if ($cronlastrun <= time() - 3600 * 24) { // Cron is overdue.
-        $msg = '';
-        $msg .= '<button type="button" class="close" data-dismiss="alert">×</button>';
-        $msg .= '<p>';
-        $msg .= '<strong>' . get_string('warning') . '</strong> - ';
-        if (empty($CFG->cronclionly)) {
-            // Determine build link to run cron.
-            $cronurl = new moodle_url('/admin/cron.php');
-            if (!empty($CFG->cronremotepassword)) {
-                $cronurl = new moodle_url('/admin/cron.php', array('password' => $CFG->cronremotepassword));
-            }
-            $msg .= get_string('cronwarning', 'admin', $cronurl->out());
-        } else {
-            $msg .= get_string('cronwarningcli', 'admin');
-        }
-        $msg .= '</p>';
-        $msg .= '<p>' . get_string('cron_help', 'admin');
-        if (!empty($CFG->branch)) {
-            $icon = $OUTPUT->pix_icon('help', get_string('moreinfo'));
-            $link = $CFG->docroot . '/' . $CFG->branch . '/' . substr(current_language(), 0, 2) . '/Cron';
-            $msg .= html_writer::link($link, $icon, array('class' => 'helplink', 'target' => '_blank', 'rel' => 'external'));
-        }
-        $msg .= '</p>';
-        local_uploadenrolmentmethods_msgbox($msg, null, 3, 'alert alert-danger alert-block fade in');
-    }
-
     // Display the form. ============================================.
     $form->display();
 
 } else {      // Send test email.
 
-    $fromemail = local_uploadenrolmentmethods_generate_email_user($data->sender);
-
-    if ($CFG->branch >= 26) {
-        $toemail = core_text::strtolower($data->recipient);
-    } else {
-        $toemail = textlib::strtolower($data->recipient);
-    }
-    if ($toemail !== clean_param($toemail, PARAM_EMAIL)) {
-        local_uploadenrolmentmethods_msgbox(get_string('invalidemail'), get_string('error'), 2, 'errorbox', $url);
-    }
-    $toemail = local_uploadenrolmentmethods_generate_email_user($toemail, '');
-
-    $subject = format_string($SITE->fullname);
-
-    // Add some system information.
-    $a = new stdClass();
-    if (isloggedin()) {
-        $a->regstatus = get_string('registered', 'local_'.$pluginname, $USER->username);
-    } else {
-        $a->regstatus = get_string('notregistered', 'local_'.$pluginname);
-    }
-    $a->lang = current_language();
-    $a->browser = $_SERVER['HTTP_USER_AGENT'];
-    $a->referer = $_SERVER['HTTP_REFERER'];
-    $a->release = $CFG->release;
-    $a->ip = local_uploadenrolmentmethods_getuserip();
-    $messagehtml = get_string('message', 'local_'.$pluginname, $a);
-    $messagetext = html_to_text($messagehtml);
-
-    // Manage Moodle SMTP debugging display.
-    $debuglevel = $CFG->debug;
-    $debugdisplay = $CFG->debugdisplay;
-    $debugsmtp = $CFG->debugsmtp;
-    $showlog = !empty($data->alwaysshowlog) || ($debugdisplay && $debugsmtp);
     // Set debug level to a minimum of NORMAL: Show errors, warnings and notices.
     if ($CFG->debug < 15) {
         $CFG->debug = 15;
     }
     $CFG->debugdisplay = true;
     $CFG->debugsmtp = true;
-    ob_start();
-    $success = email_to_user($toemail, $fromemail, $subject, $messagetext, $messagehtml, '', '', true);
-    $smtplog = ob_get_contents();
-    ob_end_clean();
+
     $CFG->debug = $debuglevel;
     $CFG->debugdisplay = $debugdisplay;
     $CFG->debugsmtp = $debugsmtp;
 
     if ($success) { // Success.
 
-        if ($showlog) {
-            // Display debugging info if settings were already on before the test or user wants to force display.
-            echo $smtplog;
-        }
-        if (empty($CFG->smtphosts)) {
-            $msg = get_string('sentmailphp', 'local_'.$pluginname);
-        } else {
-            $msg = get_string('sentmail', 'local_'.$pluginname);
-        }
-        local_uploadenrolmentmethods_msgbox($msg, get_string('success'), 2, 'infobox', $url);
-
     } else { // Failed to deliver message to the SMTP mail server.
 
-        if (trim($smtplog) == false) { // No communication between Moodle and the SMTP server.
-            $errstring = 'errorcommunications';
-        } else { // SMTP mail server refused the email.
-            $errstring = 'errorsend';
-            // Display the results of the dialogue between Moodle and the SMTP server.
-            echo $smtplog;
-        }
-
-        if ($CFG->branch >= 32) {
-            $msg = get_string($errstring, 'local_'.$pluginname, '../../admin/settings.php?section=outgoingmailconfig');
-        } else {
-            $msg = get_string($errstring, 'local_'.$pluginname, '../../admin/settings.php?section=messagesettingemail');
-        }
-        local_uploadenrolmentmethods_msgbox($msg, get_string('emailfail', 'error'), 2, 'errorbox', $url);
 
     }
 }

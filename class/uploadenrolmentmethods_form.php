@@ -46,7 +46,7 @@ class uploadenrolmentmethods_form extends moodleform {
         // File picker
         $this->_form->addElement('filepicker', 'uploadfilepicker', null, null, $this->_customdata['options']);
         $this->_form->addHelpButton('filepicker', 'LBL_FILE_OPTIONS', 'local_uploadenrolmentmethods');
-        $this->_form->addRule('filepicker', null, 'required', null, 'client');
+        $this->_form->addRule('uploadfilepicker', null, 'required', null, 'client');
 
         // Buttons.
         $this->add_action_buttons(true, get_string('uploadcsvfile', 'local_uploadenrolmentmethods'));
