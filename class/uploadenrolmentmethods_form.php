@@ -27,6 +27,7 @@ require_once($CFG->libdir.'/formslib.php');
 
 /**
  * Form to prompt administrator for a CSV file to upload.
+ *
  * @copyright  2018 Eoin Campbell
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -45,7 +46,7 @@ class uploadenrolmentmethods_form extends moodleform {
 
         // File picker
         $this->_form->addElement('filepicker', 'uploadfilepicker', null, null, $this->_customdata['options']);
-        $this->_form->addHelpButton('filepicker', get_string('uploadcsvfile', 'local_uploadenrolmentmethods'), 'local_uploadenrolmentmethods');
+        $this->_form->addHelpButton('uploadfilepicker', get_string('uploadcsvfile', 'local_uploadenrolmentmethods'), 'local_uploadenrolmentmethods');
         $this->_form->addRule('uploadfilepicker', null, 'required', null, 'client');
 
         // Buttons.
