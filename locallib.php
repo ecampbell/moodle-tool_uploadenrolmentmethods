@@ -26,6 +26,10 @@ defined('MOODLE_INTERNAL') || die;
 
 /**
  * Validates and processes files for uploading a course enrolment methods CSV file
+ *
+ * Original code developed by Mark Johnson <mark.johnson@tauntons.ac.uk>
+ * @copyright   2010 Tauntons College, UK
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class local_uploadenrolmentmethods_handler {
 
@@ -52,7 +56,6 @@ class local_uploadenrolmentmethods_handler {
      * Return the file handler.
      *
      * @throws uploadenrolmentmethods_exception if the file can't be opened for reading
-     * @global object $USER
      * @return object File handler
      */
     public function open_file() {
@@ -107,7 +110,7 @@ class local_uploadenrolmentmethods_handler {
     }
 
     /**
-     * Processes the file to set the enrolment methods
+     * Processes the file to handle the enrolment methods
      *
      * Opens the file, loops through each row. Cleans the values in each column,
      * checks that the operation is valid and the methods exist. If all is well,
@@ -117,15 +120,11 @@ class local_uploadenrolmentmethods_handler {
      *
      * @see open_file()
      * @uses enrol_meta_sync() Meta plugin function for syncing users
-     * @global object $DB Database interface
-     * @param bool $plaintext Return report as plain text, rather than HTML?
      * @return string A report of successes and failures.S
      */
     public function process() {
         global $DB;
         $report = array();
-        // Set the newline character.
-        $nl = "\n";
 
         // Set a counter so we can report line numbers for errors.
         $line = 0;
@@ -138,9 +137,9 @@ class local_uploadenrolmentmethods_handler {
             $line++;
             // Clean idnumbers to prevent sql injection.
             $op = clean_param($csvrow[0], PARAM_ALPHANUM);
-            $parent_idnum = clean_param($csvrow[1], PARAM_TEXT);
-            $child_idnum = clean_param($csvrow[2], PARAM_TEXT);
-            $disable_status = clean_param($csvrow[3], PARAM_TEXT);
+            $parentidnumber = clean_param($csvrow[1], PARAM_TEXT);
+            $childidnumber = clean_param($csvrow[2], PARAM_TEXT);
+            $disabledstatus = clean_param($csvrow[3], PARAM_TEXT);
             $groupidnumber = clean_param($csvrow[4], PARAM_TEXT);
             $strings = new stdClass;
             $strings->line = $line;
@@ -151,17 +150,17 @@ class local_uploadenrolmentmethods_handler {
 
             // Check we've got a valid operation.
             if (!in_array($op, array('add', 'del', 'mod'))) {
-                $report[] = get_string('invalidop', 'block_metalink', $strings);
+                $report[] = get_string('invalidop', 'local_uploadenrolmentmethods', $strings);
                 continue;
             }
             // Check the user we're assigning exists.
-            if (!$parent = $DB->get_record('course', array('idnumber' => $parent_idnum))) {
-                $report[] = get_string('parentnotfound', 'block_metalink', $strings);
+            if (!$parent = $DB->get_record('course', array('idnumber' => $parentidnumber))) {
+                $report[] = get_string('parentnotfound', 'local_uploadenrolmentmethods', $strings);
                 continue;
             }
             // Check the user we're assigning to exists.
-            if (!$child = $DB->get_record('course', array('idnumber' => $child_idnum))) {
-                $report[] = get_string('childnotfound', 'block_metalink', $strings);
+            if (!$child = $DB->get_record('course', array('idnumber' => $childidnumber))) {
+                $report[] = get_string('childnotfound', 'local_uploadenrolmentmethods', $strings);
                 continue;
             }
 
@@ -180,11 +179,11 @@ class local_uploadenrolmentmethods_handler {
                 );
                 if ($instance = $DB->get_record('enrol', $instanceparams)) {
                     $enrol->delete_instance($instance);
-                    $report[] =  get_string('reldeleted', 'block_metalink', $strings);
+                    $report[] = get_string('reldeleted', 'local_uploadenrolmentmethods', $strings);
                 } else {
-                    $report[] =  get_string('reldoesntexist', 'block_metalink', $strings);
+                    $report[] = get_string('reldoesntexist', 'local_uploadenrolmentmethods', $strings);
                 }
-            } elseif ($op == 'mod') {
+            } else if ($op == 'mod') {
                 // If we're modifying, check the parent is already linked to the
                 // child, and change the status.  Skip the line if they're not.
                 $instanceparams = array(
@@ -193,10 +192,10 @@ class local_uploadenrolmentmethods_handler {
                     'enrol' => 'meta'
                 );
                 if ($instance = $DB->get_record('enrol', $instanceparams)) {
-                    $enrol->update_status($instance, $disable_status);
-                    $report[] =  get_string('relmodified', 'block_metalink', $strings);
+                    $enrol->update_status($instance, $disabledstatus);
+                    $report[] =  get_string('relmodified', 'local_uploadenrolmentmethods', $strings);
                 } else {
-                    $report[] =  get_string('reldoesntexist', 'block_metalink', $strings);
+                    $report[] =  get_string('reldoesntexist', 'local_uploadenrolmentmethods', $strings);
                 }
             } else {
                 // If we're adding, check that the parent is not already linked
@@ -212,25 +211,25 @@ class local_uploadenrolmentmethods_handler {
                     'enrol' => 'meta'
                 );
                 if ($instance = $DB->get_record('enrol', $instanceparams1)) {
-                    $report[] = get_string('childisparent', 'block_metalink', $strings);
+                    $report[] = get_string('childisparent', 'local_uploadenrolmentmethods', $strings);
                 } else if ($instance = $DB->get_record('enrol', $instanceparams2)) {
-                    $report[] = get_string('relalreadyexists', 'block_metalink', $strings);
+                    $report[] = get_string('relalreadyexists', 'local_uploadenrolmentmethods', $strings);
                 } else if ($instance = $enrol->add_instance($parent, array('customint1' => $child->id))) {
                     enrol_meta_sync($parent->id);
-                    $report[] = get_string('reladded', 'block_metalink', $strings);
+                    $report[] = get_string('reladded', 'local_uploadenrolmentmethods', $strings);
 
-                    // Instance added, now disable it if necessary
-                    if ($disable_status == 1) {
+                    // Instance added, now disable it if necessary.
+                    if ($disabledstatus == 1) {
                         $instance = $DB->get_record('enrol', $instanceparams2);
-                        $enrol->update_status($instance, $disable_status);
+                        $enrol->update_status($instance, $disabledstatus);
                     }
                 } else {
-                    $report[] = get_string('reladderror', 'block_metalink', $strings);
+                    $report[] = get_string('reladderror', 'local_uploadenrolmentmethods', $strings);
                 }
             }
         }
         fclose($file);
-        return implode($nl, $report);
+        return implode("\n", $report);
     }
 }
 
@@ -239,6 +238,9 @@ class local_uploadenrolmentmethods_handler {
  *
  * Extends the moodle_exception with an http property, to store an HTTP error
  * code for responding to AJAX requests.
+ *
+ * @copyright   2010 Tauntons College, UK
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class uploadenrolmentmethods_exception extends moodle_exception {
 
@@ -258,7 +260,7 @@ class uploadenrolmentmethods_exception extends moodle_exception {
      * @param int $http
      */
     public function __construct($errorcode, $a = null, $http = 200) {
-        parent::__construct($errorcode, 'block_metalink', '', $a);
+        parent::__construct($errorcode, 'local_uploadenrolmentmethods', '', $a);
         $this->http = $http;
     }
 }

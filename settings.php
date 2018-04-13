@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Adds Upload course enrolment methods to the Site Administration > Plugins > Enrolments menu. There are no settings for this plugin.
+ * Adds Upload course enrolment methods to the Site Administration > Plugins > Enrolments menu.
  *
  * @package    local_uploadenrolmentmethods
  * @copyright  2018 Eoin Campbell

@@ -99,7 +99,7 @@ if (!$data) { // Display the form.
     $report = $handler->process();
     echo $report;
 
-    // Done, revert debug level
+    // Done, revert debug level.
     $CFG->debug = $debuglevel;
     $CFG->debugdisplay = $debugdisplay;
 }
