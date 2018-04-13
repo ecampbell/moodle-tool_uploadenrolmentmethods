@@ -40,19 +40,16 @@ class uploadenrolmentmethods_form extends moodleform {
         global $USER, $CFG;
         $mform = $this->_form;
 
-        // Header.
-
+        // Heading.
         $mform->addElement('html', '<p>'.get_string('pluginname_help', 'local_uploadenrolmentmethods').'</p>');
 
-        // File picker
+        // Insert a File picker element.
         $this->_form->addElement('filepicker', 'csvfile', get_string('csvfile', 'local_uploadenrolmentmethods'));
-        // $this->_form->addHelpButton('csvfile', get_string('csvfile', 'local_uploadenrolmentmethods'), 'local_uploadenrolmentmethods');
         $this->_form->addHelpButton('csvfile', 'csvfile', 'local_uploadenrolmentmethods');
         $this->_form->addRule('csvfile', null, 'required', null, 'client');
 
-        // Buttons.
+        // Standard buttons.
         $this->add_action_buttons(true, get_string('uploadcsvfile', 'local_uploadenrolmentmethods'));
-
     }
 
     /**
