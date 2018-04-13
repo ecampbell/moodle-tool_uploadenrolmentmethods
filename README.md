@@ -18,7 +18,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+along with Moodle.  If not, see .
 
 Authors
 -------
@@ -29,7 +29,9 @@ Description
 The Upload course enrolment methods plugin for Moodle allows you to add 
 enrolment methods to a range of courses at the same time. Only the Course Metalink
 is supported at the moment. You can also delete, enable or disable existing enrolment 
-methods in a course.
+methods in a course. 
+
+The plugin is strongly based on the [Upload Metacourse links (block_metalink)](https://moodle.org/plugins/block_metalink) plugin developed by Mark Johnson, and uses code from it.
 
 Requirements
 ------------
@@ -50,16 +52,17 @@ Uninstallation
 --------------
 Uninstalling the plugin by going into the following:
 
-Home > Administration > Site Administration > Plugins > Manage plugins > Upload enrolment methods
+__Administration &gt; Site administration &gt; Plugins &gt; Manage plugins &gt; Upload enrolment methods__
 
 ...and click Uninstall. You may also need to manually delete the following folder:
 
     /local/upload_enrolment_methods
 
-Usage & Settings
+Usage &amp; Settings
 ----------------
 There are no configurable settings for this plugin.
 
-Use the command Administration > Site Administration > Plugins > Enrolments > Upload enrolment methods
+Use the command __Administration &gt; Site administration &gt; Plugins &gt; Enrolments &gt; Upload enrolment methods__
 to upload a CSV file containing lines of the form:
-operation, shortname, method, idnumber, disabled
+
+    operation, parent idnumber, child idnumber, disabled
