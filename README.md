@@ -27,9 +27,9 @@ Eoin Campbell
 Description
 -----------
 The Upload course enrolment methods plugin for Moodle allows you to add 
-enrolment methods to a range of courses at the same time. Both the Course Metalink
-and Cohort sync methods are supported. You can also delete, enable or disable 
-existing enrolment methods in a course.
+enrolment methods to a range of courses at the same time. Only the Course Metalink
+is supported at the moment. You can also delete, enable or disable existing enrolment 
+methods in a course.
 
 Requirements
 ------------
@@ -60,6 +60,6 @@ Usage & Settings
 ----------------
 There are no configurable settings for this plugin.
 
-Use the command Administration > Site Administration > Plugins > Enrolments > Upload enrolment methods to upload 
-a CSV file containing lines of the form:
+Use the command Administration > Site Administration > Plugins > Enrolments > Upload enrolment methods
+to upload a CSV file containing lines of the form:
 operation, shortname, method, idnumber, disabled

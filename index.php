@@ -65,10 +65,7 @@ $PAGE->set_title($title);
 $PAGE->set_heading($heading);
 admin_externalpage_setup('local_'.$pluginname); // Sets the navbar & expands navmenu.
 
-// Setup the form.
-
-
-
+// Set up the form.
 $form = new uploadenrolmentmethods_form(null, array('fromdefault' => ''));
 if ($form->is_cancelled()) {
     redirect($homeurl);
@@ -86,7 +83,7 @@ if (!$data) { // Display the form.
     // Display the form. ============================================.
     $form->display();
 
-} else {      // Send test email.
+} else {      // Process the CSV file.
 
     // Set debug level to a minimum of NORMAL: Show errors, warnings and notices.
     if ($CFG->debug < 15) {
