@@ -25,8 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_uploadenrolmentmethods';  // To check on upgrade, that module sits in correct place
-$plugin->version   = 2018041104;        // The current module version (Date: YYYYMMDDXX)
+$plugin->version   = 2018041301;        // The current module version (Date: YYYYMMDDXX)
 $plugin->requires  = 2015051109;        // Requires Moodle version 2.9.
-$plugin->release   = '0.1';
+$plugin->release   = '0.2';
 $plugin->maturity  = MATURITY_BETA;
-$plugin->cron      = 0;
