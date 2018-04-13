@@ -193,9 +193,9 @@ class local_uploadenrolmentmethods_handler {
                 );
                 if ($instance = $DB->get_record('enrol', $instanceparams)) {
                     $enrol->update_status($instance, $disabledstatus);
-                    $report[] =  get_string('relmodified', 'local_uploadenrolmentmethods', $strings);
+                    $report[] = get_string('relmodified', 'local_uploadenrolmentmethods', $strings);
                 } else {
-                    $report[] =  get_string('reldoesntexist', 'local_uploadenrolmentmethods', $strings);
+                    $report[] = get_string('reldoesntexist', 'local_uploadenrolmentmethods', $strings);
                 }
             } else {
                 // If we're adding, check that the parent is not already linked
