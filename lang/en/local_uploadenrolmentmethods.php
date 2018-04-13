@@ -26,10 +26,9 @@ defined('MOODLE_INTERNAL') || die();
 
 
 $string['cantreadcsv']  = 'Unable to read CSV file';
-$string['cantremoveold'] = 'Old cron file $a couldn\'t be removed. Please check file permissions.';
 $string['childisparent'] = '{$a->child} is a parent of {$a->parent}, so cannot be added as its child.';
 $string['childnotfound'] = 'Line {$a->line}: Child Course not found';
-$string['credit'] = 'Eoin Campbell - <a href="http://www.it-tallaght.ie/">Institute of Technology Tallaght</a>';
+$string['cohortdisabled'] = 'The "Cohort sync" enrolment plugin is disabled. Enable it to use this plugin.';
 $string['csvfile'] = 'Select CSV file';
 $string['csvfile_help'] = 'The format of the file should be as follows:
 
@@ -39,7 +38,7 @@ $string['csvfile_help'] = 'The format of the file should be as follows:
 * Allowed operations are add, del, mod';
 $string['heading'] = 'Upload course enrolment methods from a CSV file';
 $string['invalidop'] = 'Line {$a->line}: Invalid operation {$a->op}';
-$string['metadisabled'] = 'The Metacourse enrolment plugin is disabled. Enable it to use this block.';
+$string['metadisabled'] = 'The "Course meta link" enrolment plugin is disabled. Enable it to use this plugin.';
 $string['musthavefile'] = 'You must select a file';
 $string['nodir'] = '{$a} does not exist or is not writable. Please check folder permissions.';
 $string['parentnotfound'] = 'Line {$a->line}: Parent Course not found';
@@ -51,7 +50,7 @@ $string['relalreadyexists'] = '{$a->child} already linked to {$a->parent}';
 $string['reldeleted'] = '{$a->child} unlinked from {$a->parent}';
 $string['reldoesntexist'] = '{$a->child} not linked to {$a->parent}, so can\'t be removed';
 $string['relmodified'] = '{$a->child} modified';
-$string['toofewcols'] = 'CSV file has too few columns on line {$a}, expecting 3.';
-$string['toomanycols'] = 'CSV file has too many columns on line {$a}, expecting 3.';
+$string['toofewcols'] = 'CSV file has too few columns on line {$a}, expecting 5.';
+$string['toomanycols'] = 'CSV file has too many columns on line {$a}, expecting 5.';
 $string['uploadcsvfile'] = 'Upload CSV file';
 $string['uploadcsvfilerequired'] = 'CSV file required';

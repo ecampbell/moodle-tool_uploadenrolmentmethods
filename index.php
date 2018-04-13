@@ -80,6 +80,22 @@ if (!$data) { // Display the form.
 
     echo $OUTPUT->heading($heading);
 
+    $displaymanageenrollink = 0;
+    if (!enrol_is_enabled('meta')) {
+        $url = new moodle_url('/admin/settings.php', array('section' => 'manageenrols'));
+        echo html_writer::tag('div', get_string('metadisabled', 'local_uploadenrolmentmethods'));
+        $displaymanageenrollink = 1;
+    }
+    if (!enrol_is_enabled('cohort')) {
+        $url = new moodle_url('/admin/settings.php', array('section' => 'manageenrols'));
+        echo html_writer::tag('div', get_string('cohortdisabled', 'local_uploadenrolmentmethods'));
+        $displaymanageenrollink = 1;
+    }
+    if ($displaymanageenrollink) {
+        $strmanage = get_string('manageenrols', 'enrol');
+        echo html_writer::tag('a', $strmanage, array('href' => $url));
+    }
+
     // Display the form. ============================================.
     $form->display();
 
