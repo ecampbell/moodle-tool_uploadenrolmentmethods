@@ -135,6 +135,17 @@ class local_uploadenrolmentmethods_handler {
         // Loop through each row of the file.
         while ($csvrow = fgetcsv($file)) {
             $line++;
+
+            // Check for the correct number of columns.
+            if (count($csvrow) < 5) {
+                $report[] = get_string('toofewcols', 'local_uploadenrolmentmethods', $line);
+                continue;
+            }
+            if (count($csvrow) > 5) {
+                $report[] = get_string('toomanycols', 'local_uploadenrolmentmethods', $line);
+                continue;
+            }
+
             // Clean idnumbers to prevent sql injection.
             $op = clean_param($csvrow[0], PARAM_ALPHANUM);
             $parentidnumber = clean_param($csvrow[1], PARAM_TEXT);

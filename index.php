@@ -73,7 +73,7 @@ if ($form->is_cancelled()) {
 
 echo $OUTPUT->header();
 
-// Display or process the form. =====================================.
+// Display or process the form.
 
 $data = $form->get_data();
 if (!$data) { // Display the form.
@@ -82,21 +82,20 @@ if (!$data) { // Display the form.
 
     $displaymanageenrollink = 0;
     if (!enrol_is_enabled('meta')) {
-        $url = new moodle_url('/admin/settings.php', array('section' => 'manageenrols'));
         echo html_writer::tag('div', get_string('metadisabled', 'local_uploadenrolmentmethods'));
         $displaymanageenrollink = 1;
     }
     if (!enrol_is_enabled('cohort')) {
-        $url = new moodle_url('/admin/settings.php', array('section' => 'manageenrols'));
         echo html_writer::tag('div', get_string('cohortdisabled', 'local_uploadenrolmentmethods'));
         $displaymanageenrollink = 1;
     }
     if ($displaymanageenrollink) {
+        $manageenrolsurl = new moodle_url('/admin/settings.php', array('section' => 'manageenrols'));
         $strmanage = get_string('manageenrols', 'enrol');
-        echo html_writer::tag('a', $strmanage, array('href' => $url));
+        echo html_writer::tag('a', $strmanage, array('href' => $manageenrolsurl));
     }
 
-    // Display the form. ============================================.
+    // Display the form.
     $form->display();
 
 } else {      // Process the CSV file.
@@ -109,56 +108,18 @@ if (!$data) { // Display the form.
     }
     $CFG->debugdisplay = true;
 
-    // Validate and process the file, and output a report.
+    // Process the CSV file, reporting issues as we go.
     $handler = new local_uploadenrolmentmethods_handler($data->csvfile);
-    $handler->validate();
+    // $handler->validate();
     $report = $handler->process();
     echo $report;
+
+    echo $OUTPUT->continue_button($url);
 
     // Done, revert debug level.
     $CFG->debug = $debuglevel;
     $CFG->debugdisplay = $debugdisplay;
 }
 
-// Footing  =========================================================.
-
+// Footer.
 echo $OUTPUT->footer();
-
-/*
-try {
-    if ($data = $mform->get_data()) {
-        // Check the user is allowed to use the block.
-        if (!has_capability('block/metalink:use', $PAGE->context)) {
-            throw new metalink_exception('nopermission', '', 401);
-        }
-
-        // Validate and process the file.
-        $handler = new block_metalink_handler($data->metalink_csvfile);
-        $handler->validate();
-        $report = $handler->process();
-
-        // If it's a synchronous request, display a full page with the report
-        // from the processing handler. Otherwise, just return the report.
-        $PAGE->set_title(get_string('pluginname', 'block_metalink'));
-        $PAGE->set_heading(get_string('pluginname', 'block_metalink'));
-        if (!$ajax) {
-            echo $OUTPUT->header();
-        }
-        echo $report;
-        if (!$ajax) {
-            echo $OUTPUT->footer();
-        }
-    } else {
-        throw new metalink_exception('noform', '', 400);
-    }
-} catch (metalink_exception $e) {
-    // If async, set the HTTP error code and print the message as plaintext.
-    // Otherwise, display a full Moodle error message.
-    if ($ajax) {
-        header('HTTP/1.1 '.$e->http);
-        die(get_string($e->errorcode, $e->module, $e->a));
-    } else {
-        print_error($e->errorcode, $e->module, '', $e->a);
-    }
-}
-*/
