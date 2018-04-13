@@ -56,7 +56,7 @@ __Administration &gt; Site administration &gt; Plugins &gt; Manage plugins &gt; 
 
 ...and click Uninstall. You may also need to manually delete the following folder:
 
-    /local/upload_enrolment_methods
+    /local/uploadenrolmentmethods
 
 Usage &amp; Settings
 ----------------
