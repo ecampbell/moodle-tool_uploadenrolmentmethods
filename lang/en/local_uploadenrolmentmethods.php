@@ -27,6 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 $string['pluginname'] = 'Upload enrolment methods';
 $string['pluginname_help'] = 'Upload enrolment methods from a CSV file to set enrolment methods for a range of courses in a single operation.';
 $string['credit'] = 'Eoin Campbell - <a href="http://www.it-tallaght.ie/">Institute of Technology Tallaght</a>';
+$string['csvfile'] = 'CSV file';
+$string['csvfile_help'] = 'The format of the file should be as follows:
+
+* Each line of the file contains one record.
+* Each record is a series of data separated by commas.
+* Required are operation, shortname, method';
 
 $string['heading'] = 'Upload course enrolment methods from a CSV file';
 $string['uploadcsvfile'] = 'Upload CSV file';
