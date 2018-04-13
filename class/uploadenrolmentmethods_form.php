@@ -45,9 +45,10 @@ class uploadenrolmentmethods_form extends moodleform {
         $mform->addElement('html', '<p>'.get_string('pluginname_help', 'local_uploadenrolmentmethods').'</p>');
 
         // File picker
-        $this->_form->addElement('filepicker', 'uploadfilepicker', null, null, $this->_customdata['options']);
-        $this->_form->addHelpButton('uploadfilepicker', get_string('uploadcsvfile', 'local_uploadenrolmentmethods'), 'local_uploadenrolmentmethods');
-        $this->_form->addRule('uploadfilepicker', null, 'required', null, 'client');
+        $this->_form->addElement('filepicker', 'csvfile', get_string('csvfile', 'local_uploadenrolmentmethods'));
+        // $this->_form->addHelpButton('csvfile', get_string('csvfile', 'local_uploadenrolmentmethods'), 'local_uploadenrolmentmethods');
+        $this->_form->addHelpButton('csvfile', 'csvfile', 'local_uploadenrolmentmethods');
+        $this->_form->addRule('csvfile', null, 'required', null, 'client');
 
         // Buttons.
         $this->add_action_buttons(true, get_string('uploadcsvfile', 'local_uploadenrolmentmethods'));
@@ -65,8 +66,8 @@ class uploadenrolmentmethods_form extends moodleform {
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
-        if (empty($data['uploadfilepicker'])) {
-            $errors['uploadfilepicker'] = get_string('uploadcsvfilerequired', 'local_uploadenrolmentmethods');
+        if (empty($data['csvfile'])) {
+            $errors['csvfile'] = get_string('uploadcsvfilerequired', 'local_uploadenrolmentmethods');
         }
 
         return $errors;
