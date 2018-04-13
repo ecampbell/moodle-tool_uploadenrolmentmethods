@@ -24,37 +24,34 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['pluginname'] = 'Upload enrolment methods';
-$string['pluginname_help'] = 'Upload enrolment methods from a CSV file to set enrolment methods for a range of courses in a single operation.';
+
+$string['cantreadcsv']  = 'Unable to read CSV file';
+$string['cantremoveold'] = 'Old cron file $a couldn\'t be removed. Please check file permissions.';
+$string['childisparent'] = '{$a->child} is a parent of {$a->parent}, so cannot be added as its child.';
+$string['childnotfound'] = 'Line {$a->line}: Child Course not found';
 $string['credit'] = 'Eoin Campbell - <a href="http://www.it-tallaght.ie/">Institute of Technology Tallaght</a>';
-$string['csvfile'] = 'CSV file';
+$string['csvfile'] = 'Select CSV file';
 $string['csvfile_help'] = 'The format of the file should be as follows:
 
 * Each line of the file contains one record.
 * Each record is a series of data separated by commas.
-* Required are operation, shortname, method';
-
+* Required fields are operation, parent course idnumber, child course idnumber, disabled, group.
+* Allowed operations are add, del, mod';
 $string['heading'] = 'Upload course enrolment methods from a CSV file';
+$string['invalidop'] = 'Line {$a->line}: Invalid operation {$a->op}';
+$string['metadisabled'] = 'The Metacourse enrolment plugin is disabled. Enable it to use this block.';
+$string['musthavefile'] = 'You must select a file';
+$string['nodir'] = '{$a} does not exist or is not writable. Please check folder permissions.';
+$string['parentnotfound'] = 'Line {$a->line}: Parent Course not found';
+$string['pluginname'] = 'Upload enrolment methods';
+$string['pluginname_help'] = 'Upload enrolment methods from a CSV file to set enrolment methods for a range of courses in a single operation.';
+$string['reladded'] = '{$a->child} sucessfully linked to {$a->parent}';
+$string['reladderror'] = 'Error linking {$a->child} to {$a->parent}';
+$string['relalreadyexists'] = '{$a->child} already linked to {$a->parent}';
+$string['reldeleted'] = '{$a->child} unlinked from {$a->parent}';
+$string['reldoesntexist'] = '{$a->child} not linked to {$a->parent}, so can\'t be removed';
+$string['relmodified'] = '{$a->child} modified';
+$string['toofewcols'] = 'CSV file has too few columns on line {$a}, expecting 3.';
+$string['toomanycols'] = 'CSV file has too many columns on line {$a}, expecting 3.';
 $string['uploadcsvfile'] = 'Upload CSV file';
 $string['uploadcsvfilerequired'] = 'CSV file required';
-
-$string['errorsend'] = 'Upload:The test email message could not be delivered to the mail server.</p><p><strong>Recommendation:</strong></p><p>Check your Moodle <a href="{$a}" target="blank">Email settings</a>. For more help, see the FAQ section in the documentation.';
-$string['errorcommunications'] = 'Upload:Moodle could not communicate with your mail server.</p><p><strong>Recommendation:</strong></p><p>Start by checking your Moodle <a href="{$a}" target="_blank">SMTP mail settings</a>.</p><p>If they look correct, check your SMTP Server and/or firewall settings to ensure that they are configured to accept SMTP connections from your Moodle web server and from your no-reply email address. For more help, see the FAQ section in the documentation.';
-$string['sendmethod'] = 'Upload:Email send method';
-$string['sentmail'] = 'Upload:Moodle successfully delivered the test message to the SMTP mail server.';
-$string['sentmailphp'] = 'Upload:The Moodle test message was successfully accepted by PHP Mail.';
-$string['registered'] = 'Upload:Registered user ({$a}).';
-$string['notregistered'] = 'Upload:Not registered or not logged in.';
-$string['phpmethod'] = 'Upload:PHP default method';
-$string['smtpmethod'] = 'Upload:SMTP hosts: {$a}';
-$string['message'] = 'Upload:<p>This is a test message. Please disregard.</p>
-<p>If you received this email, it means that you have successfully configured your Moodle site\'s email settings.</p>
-<hr><p><strong>Additional User Information</strong></p>
-<ul>
-<li><strong>Registration status :</strong> {$a->regstatus}</li>
-<li><strong>Preferred language :</strong> {$a->lang}</li>
-<li><strong>User\'s web browser :</strong> {$a->browser}</li>
-<li><strong>Message submitted from :</strong> {$a->referer}</li>
-<li><strong>Moodle version :</strong> {$a->release}</li>
-<li><strong>User\'s IP address :</strong> {$a->ip}</li>
-</ul>';
