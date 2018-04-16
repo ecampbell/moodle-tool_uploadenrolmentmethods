@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+require_once($CFG->dirroot.'/enrol/meta/locallib.php');
+
 /**
  * Validates and processes files for uploading a course enrolment methods CSV file
  *
@@ -240,7 +242,7 @@ class tool_uploadenrolmentmethods_handler {
             }
         }
         fclose($file);
-        return implode("\n", $report);
+        return implode("<br/>", $report);
     }
 }
 

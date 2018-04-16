@@ -1,6 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.5.1] - 2018-04-16
+### Added
+- Moved plugin from /local to /admin/tool folder.
+- Plugin tested with Moodle 2.9, 3.1 and 3.4.
+
 ## [0.4.0] - 2018-04-13
 ### Added
 - Improved error messages.
