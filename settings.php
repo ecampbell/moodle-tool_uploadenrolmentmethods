@@ -17,17 +17,18 @@
 /**
  * Adds Upload course enrolment methods to the Site Administration > Plugins > Enrolments menu.
  *
- * @package    local_uploadenrolmentmethods
- * @copyright  2018 Eoin Campbell
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     tool_uploadenrolmentmethods
+ * @category    admin
+ * @copyright   2018 Eoin Campbell
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
 
-    $ADMIN->add('enrolments', new admin_externalpage('local_uploadenrolmentmethods',
-            get_string('pluginname', 'local_uploadenrolmentmethods'),
-            new moodle_url('/local/uploadenrolmentmethods/')
+    $ADMIN->add('enrolments', new admin_externalpage('tool_uploadenrolmentmethods',
+            get_string('pluginname', 'tool_uploadenrolmentmethods'),
+            new moodle_url('/admin/tool/uploadenrolmentmethods/')
     ));
 }

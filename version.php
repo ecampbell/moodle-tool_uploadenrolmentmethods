@@ -15,17 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information.
+ * Plugin version and other meta-data are defined here.
  *
- * @package    local_uploadenrolmentmethods
- * @copyright  2018 Eoin Campbell
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     tool_uploadenrolmentmethods
+ * @copyright   2018 Eoin Campbell
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'local_uploadenrolmentmethods';  // To check on upgrade, that module sits in correct place
-$plugin->version   = 2018041303;        // The current module version (Date: YYYYMMDDXX)
+$plugin->component = 'tool_uploadenrolmentmethods';
+$plugin->version   = 2018041602;        // The current module version (Date: YYYYMMDDXX)
 $plugin->requires  = 2015051109;        // Requires Moodle version 2.9.
-$plugin->release   = '0.4';
+$plugin->release   = '0.5';
 $plugin->maturity  = MATURITY_BETA;

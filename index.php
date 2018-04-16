@@ -18,18 +18,18 @@
  * Displays the form and processes the form submission.
  *
  *
- * @package    local_uploadenrolmentmethods
+ * @package    tool_uploadenrolmentmethods
  * @copyright  2018 Eoin Campbell
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // Include config.php.
-require_once(__DIR__.'/../../config.php');
+require_once(__DIR__.'/../../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
 // Include our function library.
 $pluginname = 'uploadenrolmentmethods';
-require_once($CFG->dirroot.'/local/'.$pluginname.'/locallib.php');
+require_once($CFG->dirroot.'/admin/tool/'.$pluginname.'/locallib.php');
 
 // Globals.
 global $CFG, $OUTPUT, $USER, $SITE, $PAGE;
@@ -45,13 +45,13 @@ if (!is_siteadmin()) {
 // There are none.
 
 // Include form.
-require_once(dirname(__FILE__).'/class/'.$pluginname.'_form.php');
+require_once(dirname(__FILE__).'/'.$pluginname.'_form.php');
 
 // Heading ==========================================================.
 
-$title = get_string('pluginname', 'local_'.$pluginname);
-$heading = get_string('heading', 'local_'.$pluginname);
-$url = new moodle_url('/local/'.$pluginname.'/');
+$title = get_string('pluginname', 'tool_'.$pluginname);
+$heading = get_string('heading', 'tool_'.$pluginname);
+$url = new moodle_url('/admin/tool/'.$pluginname.'/');
 if ($CFG->branch >= 25) { // Moodle 2.5+.
     $context = context_system::instance();
 } else {
@@ -63,7 +63,7 @@ $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_title($title);
 $PAGE->set_heading($heading);
-admin_externalpage_setup('local_'.$pluginname); // Sets the navbar & expands navmenu.
+admin_externalpage_setup('tool_'.$pluginname); // Sets the navbar & expands navmenu.
 
 // Set up the form.
 $form = new uploadenrolmentmethods_form(null, array('fromdefault' => ''));
@@ -82,11 +82,11 @@ if (!$data) { // Display the form.
 
     $displaymanageenrollink = 0;
     if (!enrol_is_enabled('meta')) {
-        echo html_writer::tag('div', get_string('metadisabled', 'local_uploadenrolmentmethods'));
+        echo html_writer::tag('div', get_string('metadisabled', 'tool_uploadenrolmentmethods'));
         $displaymanageenrollink = 1;
     }
     if (!enrol_is_enabled('cohort')) {
-        echo html_writer::tag('div', get_string('cohortdisabled', 'local_uploadenrolmentmethods'));
+        echo html_writer::tag('div', get_string('cohortdisabled', 'tool_uploadenrolmentmethods'));
         $displaymanageenrollink = 1;
     }
     if ($displaymanageenrollink) {
@@ -109,7 +109,7 @@ if (!$data) { // Display the form.
     $CFG->debugdisplay = true;
 
     // Process the CSV file, reporting issues as we go.
-    $handler = new local_uploadenrolmentmethods_handler($data->csvfile);
+    $handler = new tool_uploadenrolmentmethods_handler($data->csvfile);
     // $handler->validate();
     $report = $handler->process();
     echo $report;

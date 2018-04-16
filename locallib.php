@@ -17,7 +17,7 @@
 /**
  * Library of functions for uploading a course enrolment methods CSV file.
  *
- * @package    local_uploadenrolmentmethods
+ * @package    tool_uploadenrolmentmethods
  * @copyright  2018 Eoin Campbell
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die;
  * @copyright   2010 Tauntons College, UK
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class local_uploadenrolmentmethods_handler {
+class tool_uploadenrolmentmethods_handler {
 
     /**
      * The ID of the file uploaded through the form
@@ -138,11 +138,11 @@ class local_uploadenrolmentmethods_handler {
 
             // Check for the correct number of columns.
             if (count($csvrow) < 5) {
-                $report[] = get_string('toofewcols', 'local_uploadenrolmentmethods', $line);
+                $report[] = get_string('toofewcols', 'tool_uploadenrolmentmethods', $line);
                 continue;
             }
             if (count($csvrow) > 5) {
-                $report[] = get_string('toomanycols', 'local_uploadenrolmentmethods', $line);
+                $report[] = get_string('toomanycols', 'tool_uploadenrolmentmethods', $line);
                 continue;
             }
 
@@ -161,17 +161,17 @@ class local_uploadenrolmentmethods_handler {
 
             // Check we've got a valid operation.
             if (!in_array($op, array('add', 'del', 'mod'))) {
-                $report[] = get_string('invalidop', 'local_uploadenrolmentmethods', $strings);
+                $report[] = get_string('invalidop', 'tool_uploadenrolmentmethods', $strings);
                 continue;
             }
             // Check the user we're assigning exists.
             if (!$parent = $DB->get_record('course', array('idnumber' => $parentidnumber))) {
-                $report[] = get_string('parentnotfound', 'local_uploadenrolmentmethods', $strings);
+                $report[] = get_string('parentnotfound', 'tool_uploadenrolmentmethods', $strings);
                 continue;
             }
             // Check the user we're assigning to exists.
             if (!$child = $DB->get_record('course', array('idnumber' => $childidnumber))) {
-                $report[] = get_string('childnotfound', 'local_uploadenrolmentmethods', $strings);
+                $report[] = get_string('childnotfound', 'tool_uploadenrolmentmethods', $strings);
                 continue;
             }
 
@@ -190,9 +190,9 @@ class local_uploadenrolmentmethods_handler {
                 );
                 if ($instance = $DB->get_record('enrol', $instanceparams)) {
                     $enrol->delete_instance($instance);
-                    $report[] = get_string('reldeleted', 'local_uploadenrolmentmethods', $strings);
+                    $report[] = get_string('reldeleted', 'tool_uploadenrolmentmethods', $strings);
                 } else {
-                    $report[] = get_string('reldoesntexist', 'local_uploadenrolmentmethods', $strings);
+                    $report[] = get_string('reldoesntexist', 'tool_uploadenrolmentmethods', $strings);
                 }
             } else if ($op == 'mod') {
                 // If we're modifying, check the parent is already linked to the
@@ -204,9 +204,9 @@ class local_uploadenrolmentmethods_handler {
                 );
                 if ($instance = $DB->get_record('enrol', $instanceparams)) {
                     $enrol->update_status($instance, $disabledstatus);
-                    $report[] = get_string('relmodified', 'local_uploadenrolmentmethods', $strings);
+                    $report[] = get_string('relmodified', 'tool_uploadenrolmentmethods', $strings);
                 } else {
-                    $report[] = get_string('reldoesntexist', 'local_uploadenrolmentmethods', $strings);
+                    $report[] = get_string('reldoesntexist', 'tool_uploadenrolmentmethods', $strings);
                 }
             } else {
                 // If we're adding, check that the parent is not already linked
@@ -222,12 +222,12 @@ class local_uploadenrolmentmethods_handler {
                     'enrol' => 'meta'
                 );
                 if ($instance = $DB->get_record('enrol', $instanceparams1)) {
-                    $report[] = get_string('childisparent', 'local_uploadenrolmentmethods', $strings);
+                    $report[] = get_string('childisparent', 'tool_uploadenrolmentmethods', $strings);
                 } else if ($instance = $DB->get_record('enrol', $instanceparams2)) {
-                    $report[] = get_string('relalreadyexists', 'local_uploadenrolmentmethods', $strings);
+                    $report[] = get_string('relalreadyexists', 'tool_uploadenrolmentmethods', $strings);
                 } else if ($instance = $enrol->add_instance($parent, array('customint1' => $child->id))) {
                     enrol_meta_sync($parent->id);
-                    $report[] = get_string('reladded', 'local_uploadenrolmentmethods', $strings);
+                    $report[] = get_string('reladded', 'tool_uploadenrolmentmethods', $strings);
 
                     // Instance added, now disable it if necessary.
                     if ($disabledstatus == 1) {
@@ -235,7 +235,7 @@ class local_uploadenrolmentmethods_handler {
                         $enrol->update_status($instance, $disabledstatus);
                     }
                 } else {
-                    $report[] = get_string('reladderror', 'local_uploadenrolmentmethods', $strings);
+                    $report[] = get_string('reladderror', 'tool_uploadenrolmentmethods', $strings);
                 }
             }
         }
@@ -271,7 +271,7 @@ class uploadenrolmentmethods_exception extends moodle_exception {
      * @param int $http
      */
     public function __construct($errorcode, $a = null, $http = 200) {
-        parent::__construct($errorcode, 'local_uploadenrolmentmethods', '', $a);
+        parent::__construct($errorcode, 'tool_uploadenrolmentmethods', '', $a);
         $this->http = $http;
     }
 }
