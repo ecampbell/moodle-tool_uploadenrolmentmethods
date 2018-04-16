@@ -15,15 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'local_uploadenrolmentmethods', language 'en', branch 'MOODLE_30_STABLE'
+ * Strings for component 'tool_uploadenrolmentmethods', language 'en'
  *
- * @package    local_uploadenrolmentmethods
+ * @package    tool_uploadenrolmentmethods
  * @copyright  2018 Eoin Campbell
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
-
 
 $string['cantreadcsv']  = 'Unable to read CSV file';
 $string['childisparent'] = '{$a->child} is a parent of {$a->parent}, so cannot be added as its child.';
