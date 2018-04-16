@@ -87,31 +87,6 @@ class tool_uploadenrolmentmethods_handler {
     }
 
     /**
-     * Checks that the file is valid CSV in the expected format
-     *
-     * Opens the file, then checks each row contains 5 comma-separated values
-     *
-     * @see open_file()
-     * @throws metalink_exeption if there are the wrong number of columns
-     * @return true on success
-     */
-    public function validate() {
-        $line = 0;
-        $file = $this->open_file();
-        while ($csvrow = fgetcsv($file)) {
-            $line++;
-            if (count($csvrow) < 5) {
-                throw new uploadenrolmentmethods_exception('toofewcols', $line, 415);
-            }
-            if (count($csvrow) > 5) {
-                throw new uploadenrolmentmethods_exception('toomanycols', $line, 415);
-            }
-        }
-        fclose($file);
-        return true;
-    }
-
-    /**
      * Processes the file to handle the enrolment methods
      *
      * Opens the file, loops through each row. Cleans the values in each column,

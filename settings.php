@@ -26,7 +26,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-
     $ADMIN->add('enrolments', new admin_externalpage('tool_uploadenrolmentmethods',
             get_string('pluginname', 'tool_uploadenrolmentmethods'),
             new moodle_url('/admin/tool/uploadenrolmentmethods/')

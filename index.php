@@ -110,7 +110,6 @@ if (!$data) { // Display the form.
 
     // Process the CSV file, reporting issues as we go.
     $handler = new tool_uploadenrolmentmethods_handler($data->csvfile);
-    // $handler->validate();
     $report = $handler->process();
     echo $report;
 
