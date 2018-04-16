@@ -1,4 +1,4 @@
-@block @uon @local_uploadenrolmentmethods @javascript
+@admin @uon @tool_uploadenrolmentmethods @javascript
 Feature: Linking metacourses and child courses by uploading a CSV file.
     In order to make it easier to import users from one course to another
     As a editing teacher
@@ -26,14 +26,15 @@ Feature: Linking metacourses and child courses by uploading a CSV file.
         And I log out 
    
     @_file_upload
-    Scenario: Manager can upload a CSV file using the upload enrolment methods plugin
+    Scenario: Manager can add the upload enrolment methods plugin
         When I log in as "admin"
         And I expand "Site administration" node
         And I expand "Plugins" node
         And I expand "Enrolments" node
         And I follow "Upload enrolment methods"
-        And I upload "local/uploadenrolmentmethods/tests/fixtures/uploadenrolmentmethods_test.csv" file to "Select CSV file" filemanager
-        And I click on "id_submitbutton" "button"
+
+        And I upload "blocks/metalink/tests/fixtures/metalink_test.csv" file to "Select CSV file" filemanager
+        And I click on "id_metalink_submit" "button"
         And I follow "Courses"
         And I follow "Course 2"
         And I expand "Users" node
@@ -41,15 +42,15 @@ Feature: Linking metacourses and child courses by uploading a CSV file.
         Then I should see "student1"
         And I should see "teacher1"
 
-    Scenario: Manager should be displayed a message if course meta link enrolment is not activated
+    Scenario: Warning should be displayed a message if meta enrolment is not activated
         Given I log in as "admin"
         And I expand "Site administration" node
         And I expand "Plugins" node
         And I expand "Enrolments" node
-        And I follow "Manage enrol plugins"
+        And I follow "Upload enrolment methods"
         And I click on "Disable" "link" in the "Course meta link" "table_row"
         And I expand "Site administration" node
         And I expand "Plugins" node
         And I expand "Enrolments" node
         And I follow "Upload enrolment methods"
-        Then I should see "Warning: the Course meta link enrolment plugin is disabled"
+        Then I should see "The Metacourse enrolment plugin is disabled"
