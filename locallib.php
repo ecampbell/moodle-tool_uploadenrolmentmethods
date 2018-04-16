@@ -128,7 +128,6 @@ class tool_uploadenrolmentmethods_handler {
             $parentidnumber = clean_param($csvrow[1], PARAM_TEXT);
             $childidnumber = clean_param($csvrow[2], PARAM_TEXT);
             $disabledstatus = clean_param($csvrow[3], PARAM_TEXT);
-            $groupidnumber = clean_param($csvrow[4], PARAM_TEXT);
             $strings = new stdClass;
             $strings->line = $line;
             $strings->op = $op;
