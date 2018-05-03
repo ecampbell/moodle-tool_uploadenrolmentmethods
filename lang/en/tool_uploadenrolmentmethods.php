@@ -25,31 +25,35 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['cantreadcsv']  = 'Unable to read CSV file';
-$string['childisparent'] = '{$a->child} is a parent of {$a->parent}, so cannot be added as its child.';
-$string['childnotfound'] = 'Line {$a->line}: Child Course not found';
-$string['cohortdisabled'] = 'The "Cohort sync" enrolment plugin is disabled. Enable it to use this plugin.';
+$string['cohortdisabled'] = 'The "Cohort sync" enrolment plugin is disabled. Cannot sync cohort "{$a->cohort}" as enrolment method.';
+$string['cohortdisabledwarning'] = 'The "Cohort sync" enrolment plugin is disabled. Enable it to use this plugin.';
+$string['cohortnotfound'] = 'Line {$a->line}: Cohort "{$a->target}" not found';
 $string['csvfile'] = 'Select CSV file';
 $string['csvfile_help'] = 'The format of the file should be as follows:
 
 * Each line of the file contains one record.
 * Each record is a series of data separated by commas.
-* Required fields are operation, parent course idnumber, child course idnumber, disabled, group.
+* Required fields are operation, parent course idnumber, target course idnumber, disabled, group.
 * Allowed operations are add, del, mod';
 $string['heading'] = 'Upload course enrolment methods from a CSV file';
-$string['invalidop'] = 'Line {$a->line}: Invalid operation {$a->op}';
-$string['metadisabled'] = 'The "Course meta link" enrolment plugin is disabled. Enable it to use this plugin.';
+$string['invalidmethod'] = 'Line {$a->line}: Invalid method "{$a->method}"';
+$string['invalidop'] = 'Line {$a->line}: Invalid operation "{$a->op}"';
+$string['metadisabled'] = 'The "Course meta link" enrolment plugin is disabled. Cannot add meta link to "{$a->parent}" as enrolment method';
+$string['metadisabledwarning'] = 'The "Course meta link" enrolment plugin is disabled. Enable it to use this plugin.';
 $string['musthavefile'] = 'You must select a file';
 $string['nodir'] = '{$a} does not exist or is not writable. Please check folder permissions.';
-$string['parentnotfound'] = 'Line {$a->line}: Parent Course not found';
+$string['parentnotfound'] = 'Line {$a->line}: Parent "{$a->parent}" not found';
 $string['pluginname'] = 'Upload enrolment methods';
 $string['pluginname_help'] = 'Upload enrolment methods from a CSV file to set enrolment methods for a range of courses in a single operation.';
-$string['reladded'] = '{$a->child} sucessfully linked to {$a->parent}';
-$string['reladderror'] = 'Error linking {$a->child} to {$a->parent}';
-$string['relalreadyexists'] = '{$a->child} already linked to {$a->parent}';
-$string['reldeleted'] = '{$a->child} unlinked from {$a->parent}';
-$string['reldoesntexist'] = '{$a->child} not linked to {$a->parent}, so can\'t be removed';
-$string['relmodified'] = '{$a->child} modified';
-$string['toofewcols'] = 'Line {$a}: Too few columns, expecting 5.';
-$string['toomanycols'] = 'Line {$a}: Too many columns, expecting 5.';
+$string['reladded'] = '"{$a->target}" ({$a->targetid}) successfully linked to "{$a->parent}" ({$a->parentid})';
+$string['reladderror'] = 'Error linking "{$a->target}" ({$a->targetid}) to "{$a->parent}" ({$a->parentid})';
+$string['relalreadyexists'] = '"{$a->target}" ({$a->targetid}) already linked to "{$a->parent}" ({$a->parentid})';
+$string['reldeleted'] = '"{$a->target}" ({$a->targetid}) unlinked from "{$a->parent}" ({$a->parentid})';
+$string['reldoesntexist'] = '"{$a->target}" ({$a->targetid}) not linked to "{$a->parent}" ({$a->parentid}), so can\'t be removed';
+$string['relmodified'] = '"{$a->target}" ({$a->targetid}) modified';
+$string['targetisparent'] = '"{$a->target}" ({$a->targetid}) is a parent of "{$a->parent}" ({$a->parentid}), so cannot be added as its target.';
+$string['targetnotfound'] = 'Line {$a->line}: Target course not found';
+$string['toofewcols'] = 'Line {$a}: Too few columns, expecting 6.';
+$string['toomanycols'] = 'Line {$a}: Too many columns, expecting 6.';
 $string['uploadcsvfile'] = 'Upload CSV file';
 $string['uploadcsvfilerequired'] = 'CSV file required';

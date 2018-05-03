@@ -82,11 +82,11 @@ if (!$data) { // Display the form.
 
     $displaymanageenrollink = 0;
     if (!enrol_is_enabled('meta')) {
-        echo html_writer::tag('div', get_string('metadisabled', 'tool_uploadenrolmentmethods'));
+        echo html_writer::tag('div', get_string('metadisabledwarning', 'tool_uploadenrolmentmethods'));
         $displaymanageenrollink = 1;
     }
     if (!enrol_is_enabled('cohort')) {
-        echo html_writer::tag('div', get_string('cohortdisabled', 'tool_uploadenrolmentmethods'));
+        echo html_writer::tag('div', get_string('cohortdisabledwarning', 'tool_uploadenrolmentmethods'));
         $displaymanageenrollink = 1;
     }
     if ($displaymanageenrollink) {

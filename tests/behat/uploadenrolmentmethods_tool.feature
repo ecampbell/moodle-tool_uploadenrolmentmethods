@@ -1,5 +1,5 @@
 @admin @uon @tool_uploadenrolmentmethods @javascript
-Feature: Linking metacourses and child courses by uploading a CSV file.
+Feature: Linking metacourses and target courses by uploading a CSV file.
     In order to make it easier to import users from one course to another
     As a editing teacher
     I need to be able to upload a csv file that imports users from one course to another
@@ -7,12 +7,15 @@ Feature: Linking metacourses and child courses by uploading a CSV file.
     Background:
         Given the following "courses" exist:
             | fullname | shortname | summary | category | idnumber |
-            | Course 1 | C101      | Prove the upload enrolment methods plugin works - Parent Course | 0 | 1|
-            | Course 2 | C102      | Prove the upload enrolment methods plugin works - Child Course | 0 | 2 |
+            | Course 1 | C101      | Prove the upload enrolment methods plugin works - Parent Course | 0 | idnum1 |
+            | Course 2 | C102      | Prove the upload enrolment methods plugin works - Target Course | 0 | idnum2 |
         Given the following "users" exist:
             | username    | firstname | lastname | email            |
             | student1    | Sam       | Student  | student1@asd.com |
             | teacher1    | Teacher   | One      | teacher1@asd.com |
+        Given the following "cohorts" exist:
+            | name     | idnumber |
+            | Cohort 1 | cohort1  |
         Given the following "course enrolments" exist:
             | user        | course | role    |
             | student1    | C101   | student |

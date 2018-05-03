@@ -114,55 +114,82 @@ class tool_uploadenrolmentmethods_handler {
             $line++;
 
             // Check for the correct number of columns.
-            if (count($csvrow) < 5) {
+            if (count($csvrow) < 6) {
                 $report[] = get_string('toofewcols', 'tool_uploadenrolmentmethods', $line);
                 continue;
             }
-            if (count($csvrow) > 5) {
+            if (count($csvrow) > 6) {
                 $report[] = get_string('toomanycols', 'tool_uploadenrolmentmethods', $line);
                 continue;
             }
 
             // Clean idnumbers to prevent sql injection.
-            $op = clean_param($csvrow[0], PARAM_ALPHANUM);
-            $parentidnumber = clean_param($csvrow[1], PARAM_TEXT);
-            $childidnumber = clean_param($csvrow[2], PARAM_TEXT);
-            $disabledstatus = clean_param($csvrow[3], PARAM_TEXT);
+            $op = clean_param($csvrow[0], PARAM_TEXT);
+            $method = clean_param($csvrow[1], PARAM_TEXT);
+            $targetidnumber = clean_param($csvrow[2], PARAM_TEXT);
+            $parentidnumber = clean_param($csvrow[3], PARAM_TEXT);
+            $disabledstatus = clean_param($csvrow[4], PARAM_TEXT);
             $strings = new stdClass;
             $strings->line = $line;
-            $strings->op = $op;
 
             // Need to check the line is valid. If not, add a message to the
             // report and skip the line.
 
             // Check we've got a valid operation.
             if (!in_array($op, array('add', 'del', 'mod'))) {
+                $strings->op = $op;
                 $report[] = get_string('invalidop', 'tool_uploadenrolmentmethods', $strings);
                 continue;
             }
-            // Check the user we're assigning exists.
-            if (!$parent = $DB->get_record('course', array('idnumber' => $parentidnumber))) {
+            // Check we've got a valid method.
+            if (!in_array($method, array('meta', 'cohort'))) {
+                $strings->method = $method;
+                $report[] = get_string('invalidmethod', 'tool_uploadenrolmentmethods', $strings);
+                continue;
+            }
+            // Check the parent metacourse enrolment method is enabled.
+            if ($method == 'meta' && !enrol_is_enabled('meta')) {
+                $strings->parent = $parentidnumber;
+                $report[] = get_string('metadisabled', 'tool_uploadenrolmentmethods', $strings);
+                continue;
+            } else if ($method == 'cohort' && !enrol_is_enabled('cohort')) {
+                // Check the cohort sync enrolment method is enabled.
+                $strings->cohort = $parentidnumber;
+                $report[] = get_string('cohortdisabled', 'tool_uploadenrolmentmethods', $strings);
+                continue;
+            }
+
+            // Check the parent metacourse we're assigning exists.
+            if ($method == 'meta' && !($parent = $DB->get_record('course', array('idnumber' => $parentidnumber)))) {
+                $strings->parent = $parentidnumber;
                 $report[] = get_string('parentnotfound', 'tool_uploadenrolmentmethods', $strings);
                 continue;
+            } else if ($method == 'cohort' && (!$parent = $DB->get_record('cohort', array('idnumber' => $parentidnumber)))) {
+                // Check the cohort we're syncing exists.
+                $strings->target = $targetidnumber;
+                $report[] = get_string('cohortnotfound', 'tool_uploadenrolmentmethods', $strings);
+                continue;
             }
-            // Check the user we're assigning to exists.
-            if (!$child = $DB->get_record('course', array('idnumber' => $childidnumber))) {
-                $report[] = get_string('childnotfound', 'tool_uploadenrolmentmethods', $strings);
+            // Check the target course we're assigning the method to exists.
+            if (!$target = $DB->get_record('course', array('idnumber' => $targetidnumber))) {
+                $report[] = get_string('targetnotfound', 'tool_uploadenrolmentmethods', $strings);
                 continue;
             }
 
-            $strings->parent = $parent->shortname;
-            $strings->child = $child->shortname;
+            $strings->target = $target->shortname;
+            $strings->targetid = $target->id;
+            $strings->parent = ($method == 'meta')? $parent->shortname : $parent->name;
+            $strings->parentid = $parent->id;
 
-            $enrol = enrol_get_plugin('meta');
+            $enrol = enrol_get_plugin($method);
 
             if ($op == 'del') {
                 // If we're deleting, check the parent is already linked to the
-                // child, and remove the link.  Skip the line if they're not.
+                // target, and remove the link.  Skip the line if they're not.
                 $instanceparams = array(
-                    'courseid' => $parent->id,
-                    'customint1' => $child->id,
-                    'enrol' => 'meta'
+                    'courseid' => $target->id,
+                    'customint1' => $parent->id,
+                    'enrol' => $method
                 );
                 if ($instance = $DB->get_record('enrol', $instanceparams)) {
                     $enrol->delete_instance($instance);
@@ -172,11 +199,11 @@ class tool_uploadenrolmentmethods_handler {
                 }
             } else if ($op == 'mod') {
                 // If we're modifying, check the parent is already linked to the
-                // child, and change the status.  Skip the line if they're not.
+                // target, and change the status.  Skip the line if they're not.
                 $instanceparams = array(
-                    'courseid' => $parent->id,
-                    'customint1' => $child->id,
-                    'enrol' => 'meta'
+                    'courseid' => $target->id,
+                    'customint1' => $parent->id,
+                    'enrol' => $method
                 );
                 if ($instance = $DB->get_record('enrol', $instanceparams)) {
                     $enrol->update_status($instance, $disabledstatus);
@@ -184,26 +211,31 @@ class tool_uploadenrolmentmethods_handler {
                 } else {
                     $report[] = get_string('reldoesntexist', 'tool_uploadenrolmentmethods', $strings);
                 }
-            } else {
+            } else if ($op == 'add') {
                 // If we're adding, check that the parent is not already linked
-                // to the child, and add them. Skip the line if they are.
+                // to the target, and add them. Skip the line if they are.
                 $instanceparams1 = array(
-                    'courseid' => $child->id,
-                    'customint1' => $parent->id,
-                    'enrol' => 'meta'
+                    'courseid' => $parent->id,
+                    'customint1' => $target->id,
+                    'enrol' => $method
                 );
                 $instanceparams2 = array(
-                    'courseid' => $parent->id,
-                    'customint1' => $child->id,
-                    'enrol' => 'meta'
+                    'courseid' => $target->id,
+                    'customint1' => $parent->id,
+                    'enrol' => $method
                 );
-                if ($instance = $DB->get_record('enrol', $instanceparams1)) {
-                    $report[] = get_string('childisparent', 'tool_uploadenrolmentmethods', $strings);
+                if ($method == 'meta' && ($instance = $DB->get_record('enrol', $instanceparams1))) {
+                    $report[] = get_string('targetisparent', 'tool_uploadenrolmentmethods', $strings);
                 } else if ($instance = $DB->get_record('enrol', $instanceparams2)) {
                     $report[] = get_string('relalreadyexists', 'tool_uploadenrolmentmethods', $strings);
-                } else if ($instance = $enrol->add_instance($parent, array('customint1' => $child->id))) {
-                    enrol_meta_sync($parent->id);
-                    $report[] = get_string('reladded', 'tool_uploadenrolmentmethods', $strings);
+                } else if ($instance = $enrol->add_instance($target, array('customint1' => $parent->id))) {
+                    if ($method == 'meta') {
+                        enrol_meta_sync($target->id);
+                        $report[] = get_string('reladded', 'tool_uploadenrolmentmethods', $strings);
+                    } else if ($method == 'cohort') {
+                        enrol_cohort_sync($target->id);
+                        $report[] = get_string('reladded', 'tool_uploadenrolmentmethods', $strings);
+                    }
 
                     // Instance added, now disable it if necessary.
                     if ($disabledstatus == 1) {
