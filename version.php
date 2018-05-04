@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'tool_uploadenrolmentmethods';
-$plugin->version   = 2018050307;        // The current module version (Date: YYYYMMDDXX)
+$plugin->version   = 2018050402;        // The current module version (Date: YYYYMMDDXX)
 $plugin->requires  = 2015051109;        // Requires Moodle version 2.9.
-$plugin->release   = '0.6.0';
+$plugin->release   = '0.6.1';
 $plugin->maturity  = MATURITY_BETA;

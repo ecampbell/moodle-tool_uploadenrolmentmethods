@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.6.1] - 2018-05-04
+### Added
+- Added clearer, more language-dependent report strings
+
 ## [0.6.0] - 2018-05-03
 ### Added
 - Added support for cohort enrolment method

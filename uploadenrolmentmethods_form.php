@@ -43,12 +43,12 @@ class uploadenrolmentmethods_form extends moodleform {
         $mform->addElement('html', '<p>'.get_string('pluginname_help', 'tool_uploadenrolmentmethods').'</p>');
 
         // Insert a File picker element.
-        $this->_form->addElement('filepicker', 'csvfile', get_string('csvfile', 'tool_uploadenrolmentmethods'));
+        $this->_form->addElement('filepicker', 'csvfile', get_string('file'));
         $this->_form->addHelpButton('csvfile', 'csvfile', 'tool_uploadenrolmentmethods');
         $this->_form->addRule('csvfile', null, 'required', null, 'client');
 
         // Standard buttons.
-        $this->add_action_buttons(true, get_string('uploadcsvfile', 'tool_uploadenrolmentmethods'));
+        $this->add_action_buttons(true, get_string('uploadthisfile'));
     }
 
     /**

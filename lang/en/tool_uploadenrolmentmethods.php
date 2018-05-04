@@ -24,36 +24,30 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['cantreadcsv']  = 'Unable to read CSV file';
-$string['cohortdisabled'] = 'The "Cohort sync" enrolment plugin is disabled. Cannot sync cohort "{$a->cohort}" as enrolment method.';
-$string['cohortdisabledwarning'] = 'The "Cohort sync" enrolment plugin is disabled. Enable it to use this plugin.';
-$string['cohortnotfound'] = 'Line {$a->line}: Cohort "{$a->target}" not found';
-$string['csvfile'] = 'Select CSV file';
-$string['csvfile_help'] = 'The format of the file should be as follows:
+$string['cohortnotfound'] = '{$a->line} {$a->linenum}: Cohort "{$a->name}" not found';
+$string['csvfile_help'] = 'The format of the CSV file must be as follows:
 
 * Each line of the file contains one record.
 * Each record is a series of data separated by commas.
-* Required fields are operation, parent course idnumber, target course idnumber, disabled, group.
+* Required fields are operation, enrolment method, target course idnumber, parent course or cohort idnumber, disabled, group.
+* Allowed methods are meta and cohort.
 * Allowed operations are add, del, mod';
 $string['heading'] = 'Upload course enrolment methods from a CSV file';
-$string['invalidmethod'] = 'Line {$a->line}: Invalid method "{$a->method}"';
-$string['invalidop'] = 'Line {$a->line}: Invalid operation "{$a->op}"';
-$string['metadisabled'] = 'The "Course meta link" enrolment plugin is disabled. Cannot add meta link to "{$a->parent}" as enrolment method';
-$string['metadisabledwarning'] = 'The "Course meta link" enrolment plugin is disabled. Enable it to use this plugin.';
+$string['invalidmethod'] = '{$a->line} {$a->linenum}: Invalid method "{$a->method}"';
+$string['invalidop'] = '{$a->line} {$a->linenum}: Invalid operation "{$a->op}"';
+$string['methoddisabled'] = '{$a->line} {$a->linenum}: "{$a->method}" {$a->disabled}. {$a->skipped}.';
+$string['methoddisabledwarning'] = '"{$a->method}": {$a->disabled}';
 $string['musthavefile'] = 'You must select a file';
-$string['nodir'] = '{$a} does not exist or is not writable. Please check folder permissions.';
-$string['parentnotfound'] = 'Line {$a->line}: Parent "{$a->parent}" not found';
+$string['parentnotfound'] = '{$a->line} {$a->linenum}: Parent "{$a->parent}" not found. {$a->skipped}.';
 $string['pluginname'] = 'Upload enrolment methods';
 $string['pluginname_help'] = 'Upload enrolment methods from a CSV file to set enrolment methods for a range of courses in a single operation.';
-$string['reladded'] = '"{$a->target}" ({$a->targetid}) successfully linked to "{$a->parent}" ({$a->parentid})';
-$string['reladderror'] = 'Error linking "{$a->target}" ({$a->targetid}) to "{$a->parent}" ({$a->parentid})';
-$string['relalreadyexists'] = '"{$a->target}" ({$a->targetid}) already linked to "{$a->parent}" ({$a->parentid})';
-$string['reldeleted'] = '"{$a->target}" ({$a->targetid}) unlinked from "{$a->parent}" ({$a->parentid})';
-$string['reldoesntexist'] = '"{$a->target}" ({$a->targetid}) not linked to "{$a->parent}" ({$a->parentid}), so can\'t be removed';
-$string['relmodified'] = '"{$a->target}" ({$a->targetid}) modified';
-$string['targetisparent'] = '"{$a->target}" ({$a->targetid}) is a parent of "{$a->parent}" ({$a->parentid}), so cannot be added as its target.';
-$string['targetnotfound'] = 'Line {$a->line}: Target course not found';
-$string['toofewcols'] = 'Line {$a}: Too few columns, expecting 6.';
-$string['toomanycols'] = 'Line {$a}: Too many columns, expecting 6.';
-$string['uploadcsvfile'] = 'Upload CSV file';
-$string['uploadcsvfilerequired'] = 'CSV file required';
+$string['reladded'] = '{$a->line} {$a->linenum}: "{$a->target}" ({$a->targetid}) successfully linked to "{$a->parent}" ({$a->parentid})';
+$string['reladderror'] = '{$a->line} {$a->linenum}: Error linking "{$a->target}" ({$a->targetid}) to "{$a->parent}" ({$a->parentid}). {$a->skipped}.';
+$string['relalreadyexists'] = '{$a->line} {$a->linenum}: "{$a->target}" ({$a->targetid}) already linked to "{$a->parent}" ({$a->parentid}). {$a->skipped}.';
+$string['reldeleted'] = '{$a->line} {$a->linenum}: "{$a->target}" ({$a->targetid}) unlinked from "{$a->parent}" ({$a->parentid})';
+$string['reldoesntexist'] = '{$a->line} {$a->linenum}: "{$a->target}" ({$a->targetid}) not linked to "{$a->parent}" ({$a->parentid}), so can\'t be removed. {$a->skipped}.';
+$string['relmodified'] = '{$a->line} {$a->linenum}: "{$a->target}" ({$a->targetid}) modified.';
+$string['targetisparent'] = '{$a->line} {$a->linenum}: "{$a->target}" ({$a->targetid}) is a parent of "{$a->parent}" ({$a->parentid}), so cannot be added as its target. {$a->skipped}.';
+$string['targetnotfound'] = '{$a->line} {$a->linenum}: {$a->message}. {$a->skipped}.';
+$string['toofewcols'] = '{$a->line} {$a->linenum}: Too few columns, expecting 6. {$a->skipped}.';
+$string['toomanycols'] = '{$a->line} {$a->linenum}: Too many columns, expecting 6. {$a->skipped}.';

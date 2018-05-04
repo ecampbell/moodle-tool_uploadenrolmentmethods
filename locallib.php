@@ -64,7 +64,7 @@ class tool_uploadenrolmentmethods_handler {
         global $USER;
         if (is_file($this->filename)) {
             if (!$file = fopen($this->filename, 'r')) {
-                throw new uploadenrolmentmethods_exception('cantreadcsv', '', 500);
+                throw new uploadenrolmentmethods_exception('cannotreadfile', $this->filename, 500);
             }
         } else {
             $fs = get_file_storage();
@@ -76,11 +76,11 @@ class tool_uploadenrolmentmethods_handler {
                                          'id DESC',
                                          false);
             if (!$files) {
-                throw new uploadenrolmentmethods_exception('cantreadcsv', '', 500);
+                throw new uploadenrolmentmethods_exception('cannotreadfile', $this->filename, 500);
             }
             $file = reset($files);
             if (!$file = $file->get_content_file_handle()) {
-                throw new uploadenrolmentmethods_exception('cantreadcsv', '', 500);
+                throw new uploadenrolmentmethods_exception('cannotreadfile', $this->filename, 500);
             }
         }
         return $file;
@@ -129,15 +129,20 @@ class tool_uploadenrolmentmethods_handler {
             $targetidnumber = clean_param($csvrow[2], PARAM_TEXT);
             $parentidnumber = clean_param($csvrow[3], PARAM_TEXT);
             $disabledstatus = clean_param($csvrow[4], PARAM_TEXT);
+
+            // Prepare language-dependent message strings
             $strings = new stdClass;
-            $strings->line = $line;
+            $strings->line = get_string('csvline', 'tool_uploadcourse');
+            $strings->skipped = get_string('skipped');
+            $strings->method = get_string('pluginname', 'enrol_' . $method);
+            $strings->linenum = $line;
+            $strings->op = $op;
 
             // Need to check the line is valid. If not, add a message to the
             // report and skip the line.
 
             // Check we've got a valid operation.
             if (!in_array($op, array('add', 'del', 'mod'))) {
-                $strings->op = $op;
                 $report[] = get_string('invalidop', 'tool_uploadenrolmentmethods', $strings);
                 continue;
             }
@@ -172,6 +177,7 @@ class tool_uploadenrolmentmethods_handler {
             }
             // Check the target course we're assigning the method to exists.
             if (!$target = $DB->get_record('course', array('idnumber' => $targetidnumber))) {
+                $strings->message = get_string('unknowncourseidnumber', $target->idnumber);
                 $report[] = get_string('targetnotfound', 'tool_uploadenrolmentmethods', $strings);
                 continue;
             }
