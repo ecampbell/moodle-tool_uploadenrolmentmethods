@@ -178,7 +178,7 @@ class tool_uploadenrolmentmethods_handler {
 
             $strings->target = $target->shortname;
             $strings->targetid = $target->id;
-            $strings->parent = ($method == 'meta')? $parent->shortname : $parent->name;
+            $strings->parent = ($method == 'meta') ? $parent->shortname : $parent->name;
             $strings->parentid = $parent->id;
 
             $enrol = enrol_get_plugin($method);
