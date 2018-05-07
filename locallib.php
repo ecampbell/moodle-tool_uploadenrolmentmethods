@@ -24,7 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+require_once($CFG->dirroot.'/lib/enrollib.php');
 require_once($CFG->dirroot.'/enrol/meta/locallib.php');
+require_once($CFG->dirroot.'/enrol/cohort/lib.php');
+require_once($CFG->dirroot.'/enrol/cohort/locallib.php');
 
 /**
  * Validates and processes files for uploading a course enrolment methods CSV file
@@ -123,26 +126,36 @@ class tool_uploadenrolmentmethods_handler {
                 continue;
             }
 
-            // Clean idnumbers to prevent sql injection.
+            // Read in clean idnumbers to prevent sql injection.
             $op = clean_param($csvrow[0], PARAM_TEXT);
             $method = clean_param($csvrow[1], PARAM_TEXT);
             $targetidnumber = clean_param($csvrow[2], PARAM_TEXT);
             $parentidnumber = clean_param($csvrow[3], PARAM_TEXT);
             $disabledstatus = clean_param($csvrow[4], PARAM_TEXT);
 
-            // Prepare language-dependent message strings
+            // Prepare reporting message strings.
             $strings = new stdClass;
             $strings->line = get_string('csvline', 'tool_uploadcourse');
             $strings->skipped = get_string('skipped');
             $strings->method = get_string('pluginname', 'enrol_' . $method);
             $strings->linenum = $line;
             $strings->op = $op;
+            $strings->status = get_string('statusenabled', 'enrol_manual');
 
-            // Need to check the line is valid. If not, add a message to the
-            // report and skip the line.
+            if ($op == 'add') {
+                $strings->oplabel =  get_string('add');
+            } else if ($op == 'del' || $op == 'delete') {
+                $strings->oplabel =  get_string('delete');
+                $op = 'del';
+            } else if ($op == 'upd' || $op == 'update' || $op == 'mod' || $op == 'modify') {
+                $strings->oplabel =  get_string('update');
+                $op = 'upd';
+            }
+
+            // Need to check the line is valid. If not, add a message to the report and skip the line.
 
             // Check we've got a valid operation.
-            if (!in_array($op, array('add', 'del', 'mod'))) {
+            if (!in_array($op, array('add', 'del', 'upd'))) {
                 $report[] = get_string('invalidop', 'tool_uploadenrolmentmethods', $strings);
                 continue;
             }
@@ -190,8 +203,8 @@ class tool_uploadenrolmentmethods_handler {
             $enrol = enrol_get_plugin($method);
 
             if ($op == 'del') {
-                // If we're deleting, check the parent is already linked to the
-                // target, and remove the link.  Skip the line if they're not.
+                // If we're deleting, check the parent is already linked to the target, and remove the link.
+                // Skip the line if they're not.
                 $instanceparams = array(
                     'courseid' => $target->id,
                     'customint1' => $parent->id,
@@ -203,23 +216,28 @@ class tool_uploadenrolmentmethods_handler {
                 } else {
                     $report[] = get_string('reldoesntexist', 'tool_uploadenrolmentmethods', $strings);
                 }
-            } else if ($op == 'mod') {
-                // If we're modifying, check the parent is already linked to the
-                // target, and change the status.  Skip the line if they're not.
+            } else if ($op == 'upd') {
+                // If we're modifying, check the parent is already linked to the target, and change the status.
+                // Skip the line if they're not.
                 $instanceparams = array(
                     'courseid' => $target->id,
                     'customint1' => $parent->id,
                     'enrol' => $method
                 );
                 if ($instance = $DB->get_record('enrol', $instanceparams)) {
+                    // Found a valid  instance, so  enable or disable it.
+                    $strings->instancename = $enrol->get_instance_name($instance);
+                    if ($disabledstatus == '1') {
+                        $strings->status = get_string('statusdisabled', 'enrol_manual');
+                    }
                     $enrol->update_status($instance, $disabledstatus);
-                    $report[] = get_string('relmodified', 'tool_uploadenrolmentmethods', $strings);
+                    $report[] = get_string('relupdated', 'tool_uploadenrolmentmethods', $strings);
                 } else {
                     $report[] = get_string('reldoesntexist', 'tool_uploadenrolmentmethods', $strings);
                 }
             } else if ($op == 'add') {
-                // If we're adding, check that the parent is not already linked
-                // to the target, and add them. Skip the line if they are.
+                // If we're adding, check that the parent is not already linked to the target, and add them.
+                // Skip the line if they are.
                 $instanceparams1 = array(
                     'courseid' => $parent->id,
                     'customint1' => $target->id,
@@ -235,20 +253,28 @@ class tool_uploadenrolmentmethods_handler {
                 } else if ($instance = $DB->get_record('enrol', $instanceparams2)) {
                     $report[] = get_string('relalreadyexists', 'tool_uploadenrolmentmethods', $strings);
                 } else if ($instance = $enrol->add_instance($target, array('customint1' => $parent->id))) {
+                    // Successfully added a valid new instance, so now instantiate it.
+                    $strings->instancename = $enrol->get_instance_name($instance);
+
+                    // Synchronise the enrolment.
                     if ($method == 'meta') {
-                        enrol_meta_sync($target->id);
-                        $report[] = get_string('reladded', 'tool_uploadenrolmentmethods', $strings);
+                        enrol_meta_sync($instance->courseid);
                     } else if ($method == 'cohort') {
-                        enrol_cohort_sync($target->id);
-                        $report[] = get_string('reladded', 'tool_uploadenrolmentmethods', $strings);
+                        $trace = new null_progress_trace();
+                        enrol_cohort_sync($trace, $instance->courseid);
+                        $trace->finished();
                     }
 
-                    // Instance added, now disable it if necessary.
-                    if ($disabledstatus == 1) {
+                    // Is it initially disabled?
+                    if ($disabledstatus == '1') {
                         $instance = $DB->get_record('enrol', $instanceparams2);
                         $enrol->update_status($instance, $disabledstatus);
+                        $strings->status = get_string('statusdisabled', 'enrol_manual');
                     }
+
+                    $report[] = get_string('reladded', 'tool_uploadenrolmentmethods', $strings);
                 } else {
+                    // Instance not added for some reason, so report an error and go to the next line.
                     $report[] = get_string('reladderror', 'tool_uploadenrolmentmethods', $strings);
                 }
             }

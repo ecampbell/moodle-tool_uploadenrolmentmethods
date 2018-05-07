@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['cohortnotfound'] = '{$a->line} {$a->linenum}: Cohort "{$a->name}" not found';
+$string['csvfile'] = '';
 $string['csvfile_help'] = 'The format of the CSV file must be as follows:
 
 * Each line of the file contains one record.
@@ -33,21 +34,23 @@ $string['csvfile_help'] = 'The format of the CSV file must be as follows:
 * Allowed methods are meta and cohort.
 * Allowed operations are add, del, mod';
 $string['heading'] = 'Upload course enrolment methods from a CSV file';
-$string['invalidmethod'] = '{$a->line} {$a->linenum}: Invalid method "{$a->method}"';
-$string['invalidop'] = '{$a->line} {$a->linenum}: Invalid operation "{$a->op}"';
-$string['methoddisabled'] = '{$a->line} {$a->linenum}: "{$a->method}" {$a->disabled}. {$a->skipped}.';
+$string['invalidmethod'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): Invalid method.';
+$string['invalidop'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): Invalid operation "{$a->op}".';
+$string['methoddisabled'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): "{$a->method}" {$a->disabled}. {$a->skipped}.';
 $string['methoddisabledwarning'] = '"{$a->method}": {$a->disabled}';
-$string['musthavefile'] = 'You must select a file';
-$string['parentnotfound'] = '{$a->line} {$a->linenum}: Parent "{$a->parent}" not found. {$a->skipped}.';
+$string['musthavefile'] = 'You must select a file.';
+$string['parentnotfound'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): Parent "{$a->parent}" not found. {$a->skipped}.';
 $string['pluginname'] = 'Upload enrolment methods';
 $string['pluginname_help'] = 'Upload enrolment methods from a CSV file to set enrolment methods for a range of courses in a single operation.';
-$string['reladded'] = '{$a->line} {$a->linenum}: "{$a->target}" ({$a->targetid}) successfully linked to "{$a->parent}" ({$a->parentid})';
-$string['reladderror'] = '{$a->line} {$a->linenum}: Error linking "{$a->target}" ({$a->targetid}) to "{$a->parent}" ({$a->parentid}). {$a->skipped}.';
-$string['relalreadyexists'] = '{$a->line} {$a->linenum}: "{$a->target}" ({$a->targetid}) already linked to "{$a->parent}" ({$a->parentid}). {$a->skipped}.';
-$string['reldeleted'] = '{$a->line} {$a->linenum}: "{$a->target}" ({$a->targetid}) unlinked from "{$a->parent}" ({$a->parentid})';
-$string['reldoesntexist'] = '{$a->line} {$a->linenum}: "{$a->target}" ({$a->targetid}) not linked to "{$a->parent}" ({$a->parentid}), so can\'t be removed. {$a->skipped}.';
-$string['relmodified'] = '{$a->line} {$a->linenum}: "{$a->target}" ({$a->targetid}) modified.';
-$string['targetisparent'] = '{$a->line} {$a->linenum}: "{$a->target}" ({$a->targetid}) is a parent of "{$a->parent}" ({$a->parentid}), so cannot be added as its target. {$a->skipped}.';
-$string['targetnotfound'] = '{$a->line} {$a->linenum}: {$a->message}. {$a->skipped}.';
-$string['toofewcols'] = '{$a->line} {$a->linenum}: Too few columns, expecting 6. {$a->skipped}.';
-$string['toomanycols'] = '{$a->line} {$a->linenum}: Too many columns, expecting 6. {$a->skipped}.';
+$string['reladded'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): "{$a->target}" ({$a->targetid}) successfully linked to "{$a->parent}" ({$a->parentid}) with name "{$a->instancename}".';
+$string['reladderror'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): Error linking "{$a->target}" ({$a->targetid}) to "{$a->parent}" ({$a->parentid}). {$a->skipped}.';
+$string['relalreadyexists'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): "{$a->target}" ({$a->targetid}) already linked to "{$a->parent}" ({$a->parentid}). {$a->skipped}.';
+$string['reldeleted'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): Deleted "{$a->instancename}" method from "{$a->target}" ({$a->targetid}).';
+$string['reldisabled'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): Disabled "{$a->instancename}" method in "{$a->target}" ({$a->targetid}).';
+$string['relenabled'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): Enabled "{$a->instancename}" method in "{$a->target}" ({$a->targetid}).';
+$string['reldoesntexist'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): "{$a->target}" ({$a->targetid}) not linked to "{$a->parent}" ({$a->parentid}), so can\'t be removed. {$a->skipped}.';
+$string['relupdated'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): Updated "{$a->instancename}" method in "{$a->target}" ({$a->targetid}).';
+$string['targetisparent'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): "{$a->target}" ({$a->targetid}) is a parent of "{$a->parent}" ({$a->parentid}), so cannot be added as its target. {$a->skipped}.';
+$string['targetnotfound'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): {$a->message}. {$a->skipped}.';
+$string['toofewcols'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): Too few columns, expecting 6. {$a->skipped}.';
+$string['toomanycols'] = '{$a->line} {$a->linenum} ({$a->oplabel}, "{$a->method}"): Too many columns, expecting 6. {$a->skipped}.';
