@@ -143,12 +143,12 @@ class tool_uploadenrolmentmethods_handler {
             $strings->status = get_string('statusenabled', 'enrol_manual');
 
             if ($op == 'add') {
-                $strings->oplabel =  get_string('add');
+                $strings->oplabel = get_string('add');
             } else if ($op == 'del' || $op == 'delete') {
-                $strings->oplabel =  get_string('delete');
+                $strings->oplabel = get_string('delete');
                 $op = 'del';
             } else if ($op == 'upd' || $op == 'update' || $op == 'mod' || $op == 'modify') {
-                $strings->oplabel =  get_string('update');
+                $strings->oplabel = get_string('update');
                 $op = 'upd';
             }
 
