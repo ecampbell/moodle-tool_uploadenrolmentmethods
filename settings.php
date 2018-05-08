@@ -18,7 +18,6 @@
  * Adds Upload course enrolment methods to the Site Administration > Plugins > Enrolments menu.
  *
  * @package     tool_uploadenrolmentmethods
- * @category    admin
  * @copyright   2018 Eoin Campbell
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
