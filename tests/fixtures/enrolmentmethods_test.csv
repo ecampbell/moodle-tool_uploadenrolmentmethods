@@ -1,2 +1,2 @@
-add,meta,idnum2,idnum1,0,dummy
-mod,meta,idnum2,idnum1,0,dummy
+add,meta,shortname2,shortname1,1,dummy
+mod,meta,shortname2,shortname1,0,dummy

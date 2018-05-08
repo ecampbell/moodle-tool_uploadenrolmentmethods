@@ -43,7 +43,7 @@ There are no configurable settings for this plugin.
 Use the command __Administration &gt; Site administration &gt; Plugins &gt; Enrolments &gt; Upload enrolment methods__
 to upload a CSV file containing lines of the form:
 
-    operation, parent idnumber, child idnumber, disabled
+    operation, enrolment method, target course shortname, meta course shortname or cohort idnumber, disabled status, group
 
 ## License ##
 

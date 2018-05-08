@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.7.0] - 2018-05-08
+### Added
+- Use course shortnames, not idnumbers as unique identifier
+
 ## [0.6.3] - 2018-05-07
 ### Added
 - Fixed reporting bug in cohort enrolment
