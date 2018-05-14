@@ -41,6 +41,7 @@ $string['methoddisabledwarning'] = 'Enrolment method "{$a->method}": {$a->disabl
 $string['parentnotfound']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Meta course "{$a->parentname}" not found. {$a->skipped}.';
 $string['pluginname']            = 'Upload enrolment methods';
 $string['pluginname_help']       = 'Upload enrolment methods from a CSV file to set enrolment methods for a range of courses in a single operation.';
+$string['privacy:metadata']      = 'The Upload enrolment methods administration tool does not store personal data.';
 $string['reladded']              = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: "{$a->targetname}" ({$a->targetid}) successfully linked to "{$a->parentname}" ({$a->parentid}) with name "{$a->instancename}". {$a->status}.';
 $string['reladderror']           = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Error linking "{$a->targetname}" ({$a->targetid}) to "{$a->parentname}" ({$a->parentid}). {$a->skipped}.';
 $string['relalreadyexists']      = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: "{$a->targetname}" ({$a->targetid}) already linked to "{$a->parentname}" ({$a->parentid}). {$a->skipped}.';

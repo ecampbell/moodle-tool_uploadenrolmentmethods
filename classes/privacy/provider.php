@@ -15,17 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Privacy information for administration tool upload enrolment methods- no user data stored.
  *
  * @package     tool_uploadenrolmentmethods
  * @copyright   2018 Eoin Campbell
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace tool_uploadenrolmentmethods\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'tool_uploadenrolmentmethods';
-$plugin->version   = 2018051401;        // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2015051109;        // Requires Moodle version 2.9.
-$plugin->release   = '0.7.1';
-$plugin->maturity  = MATURITY_BETA;
+class provider implements 
+    \core_privacy\local\metadata\null_provider {
+ 
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason() : string {
+        return 'privacy:metadata';
+    }
+}
