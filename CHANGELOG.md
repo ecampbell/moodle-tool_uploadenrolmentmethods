@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [0.7.3] - 2018-05-26
+### Added
+- Modify support for Privacy API for PHP 7.0 (3.4)
+
 ## [0.7.2] - 2018-05-26
 ### Added
 - Modify support for Privacy API for PHP 5.6 (2.9 - 3.3)
