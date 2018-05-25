@@ -26,8 +26,13 @@ namespace tool_uploadenrolmentmethods\privacy;
 
 defined('MOODLE_INTERNAL') || die();
 
-class provider implements 
-    \core_privacy\local\metadata\null_provider {
+/**
+ * Privacy Subsystem for tool_uploadenrolmentmethods implementing null_provider.
+ *
+ * @copyright   2018 Eoin Campbell
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class provider implements \core_privacy\local\metadata\null_provider {
  
     /**
      * Get the language string identifier with the component's language
@@ -35,7 +40,7 @@ class provider implements
      *
      * @return  string
      */
-    public static function get_reason() : string {
+    public static function get_reason() : {
         return 'privacy:metadata';
     }
 }
