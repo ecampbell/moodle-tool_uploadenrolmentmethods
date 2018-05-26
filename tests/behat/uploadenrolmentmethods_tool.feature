@@ -11,8 +11,8 @@ Feature: Linking metacourses and target courses by uploading a CSV file.
             | Course 2 | C102      | Prove the upload enrolment methods plugin works - Target Course | 0 | idnum2 |
         Given the following "users" exist:
             | username    | firstname | lastname | email            |
-            | student1    | Sam       | Student  | student1@asd.com |
-            | teacher1    | Teacher   | One      | teacher1@asd.com |
+            | student1    | Sam       | Student  | student1@example.com |
+            | teacher1    | Teacher   | One      | teacher1@example.com |
         Given the following "cohorts" exist:
             | name     | idnumber |
             | Cohort 1 | cohort1  |
@@ -21,9 +21,8 @@ Feature: Linking metacourses and target courses by uploading a CSV file.
             | student1    | C101   | student |
             | teacher1    | C101   | editingteacher |  
         Given I log in as "admin"
-        And I expand "Site administration" node
-        And I expand "Plugins" node
-        And I expand "Enrolments" node
+        And I follow "Site administration"
+        And I follow "Plugins"
         And I follow "Manage enrol plugins"
         And I click on "Enable" "link" in the "Course meta link" "table_row"
         And I log out 
@@ -31,14 +30,14 @@ Feature: Linking metacourses and target courses by uploading a CSV file.
     @_file_upload
     Scenario: Manager can upload a CSV file using the upload enrolment methods plugin
         When I log in as "admin"
-        And I expand "Site administration" node
-        And I expand "Plugins" node
-        And I expand "Enrolments" node
+        And I follow "Site administration"
+        And I follow "Plugins"
         And I follow "Upload enrolment methods"
-        And I upload "admin/tool/uploadenrolmentmethods/tests/fixtures/uploadenrolmentmethods_test.csv" file to "Select CSV file" filemanager
+        And I upload "admin/tool/uploadenrolmentmethods/tests/fixtures/uploadenrolmentmethods_test.csv" file to "Upload this file" filemanager
         And I click on "id_submitbutton" "button"
-        And I follow "Courses"
-        And I follow "Course 2"
+        And I expand "My courses" node
+        And I follow "C102"
+        And I expand "Course administration" node
         And I expand "Users" node
         And I follow "Enrolled users"
         Then I should see "student1"
