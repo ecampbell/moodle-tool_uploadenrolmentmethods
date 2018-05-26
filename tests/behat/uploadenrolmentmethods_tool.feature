@@ -1,4 +1,4 @@
-@admin @uon @tool_uploadenrolmentmethods @javascript
+@admin @uon @tool_uploadenrolmentmethods
 Feature: Linking metacourses and target courses by uploading a CSV file.
     In order to make it easier to import users from one course to another
     As a editing teacher
