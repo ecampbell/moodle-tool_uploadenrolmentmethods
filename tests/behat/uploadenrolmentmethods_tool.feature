@@ -11,8 +11,8 @@ Feature: Linking metacourses and target courses by uploading a CSV file.
             | Course 2 | C102      | Prove the upload enrolment methods plugin works - Target Course | 0 | idnum2 |
         Given the following "users" exist:
             | username    | firstname | lastname | email            |
-            | student1    | Sam       | Student  | student1@asd.com |
-            | teacher1    | Teacher   | One      | teacher1@asd.com |
+            | student1    | Sam       | Student  | student1@example.com |
+            | teacher1    | Teacher   | One      | teacher1@example.com |
         Given the following "cohorts" exist:
             | name     | idnumber |
             | Cohort 1 | cohort1  |
@@ -35,7 +35,7 @@ Feature: Linking metacourses and target courses by uploading a CSV file.
         And I expand "Plugins" node
         And I expand "Enrolments" node
         And I follow "Upload enrolment methods"
-        And I upload "admin/tool/uploadenrolmentmethods/tests/fixtures/uploadenrolmentmethods_test.csv" file to "Select CSV file" filemanager
+        And I upload "admin/tool/uploadenrolmentmethods/tests/fixtures/enrolmentmethods_test.csv" file to "Upload this file" filemanager
         And I click on "id_submitbutton" "button"
         And I follow "Courses"
         And I follow "Course 2"
