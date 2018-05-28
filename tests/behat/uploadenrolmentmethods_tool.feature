@@ -29,7 +29,7 @@ Feature: Linking metacourses and target courses by uploading a CSV file.
     Scenario: Manager can upload a CSV file using the upload enrolment methods plugin
         When I log in as "admin"
         And I navigate to "Upload enrolment methods" node in "Site administration > Plugins > Enrolments"
-        And I upload "admin/tool/uploadenrolmentmethods/tests/fixtures/enrolmentmethods_test.csv" file to "Upload this file" filemanager
+        And I upload "admin/tool/uploadenrolmentmethods/tests/fixtures/enrolmentmethods_test.csv" file to "File" filemanager
         And I click on "id_submitbutton" "button"
         And I follow "Courses"
         And I follow "Course 2"
