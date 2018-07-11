@@ -26,13 +26,11 @@ Feature: Linking metacourses and target courses by uploading a CSV file.
   Scenario: Administrator can upload a CSV file using the upload enrolment methods plugin
     When I log in as "admin"
     And I navigate to "Upload enrolment methods" node in "Site administration > Plugins > Enrolments"
-    And I upload "admin/tool/uploadenrolmentmethods/tests/fixtures/uploadenrolmentmethods_meta.csv" file to "Upload this file" filemanager
+    And I upload "admin/tool/uploadenrolmentmethods/tests/fixtures/enrolmentmethod_meta.csv" file to "Upload this file" filemanager
     And I click on "id_submitbutton" "button"
     And I expand "My courses" node
     And I follow "C102"
-    And I expand "Course administration" node
-    And I expand "Users" node
-    And I follow "Enrolled users"
+    And I click on "Participants"
     Then I should see "Student1"
     And I should not see "Teacher1"
 
