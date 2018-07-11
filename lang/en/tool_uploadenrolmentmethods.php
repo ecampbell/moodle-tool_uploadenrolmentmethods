@@ -25,30 +25,36 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['cohortnotfound']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Cohort "{$a->parentname}" not found. {$a->skipped}.';
-$string['csvfile'] = '';
+$string['csvcomment']            = '{$a->line} {$a->linenum} [Comment]: {$a->skipped}.';
+$string['csvfile']               = '';
 $string['csvfile_help']          = 'The format of the CSV file must be as follows:
 
+* Lines beginning with a # or ; character are comments, and skipped.
 * Each line of the file contains one record.
-* Each record is a series of data separated by commas.
-* Required fields are operation, enrolment method, target course shortname, parent course shortname or cohort idnumber, disabled, group.
+* Each record is a series of data in a fixed order separated by commas.
+* All fields are required.
+* Required fields are: operation, enrolment method, target course shortname, parent course shortname or cohort idnumber, disabled, group.
 * Allowed methods are meta and cohort.
-* Allowed operations are add, del, upd';
+* Allowed operations are add, del, upd
+* The allowed disabled status values are 1 (enable) and 0 (disable).
+* The group field is the name of a group into which enrolled students should be placed. 
+  It will be created if it doesn\'t already exist (this field is not yet supported).';
 $string['heading']               = 'Upload course enrolment methods from a CSV file';
 $string['invalidmethod']         = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Invalid method.';
-$string['invalidop']             = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Invalid operation "{$a->op}".';
-$string['methoddisabled']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: "{$a->method}" {$a->disabled}. {$a->skipped}.';
-$string['methoddisabledwarning'] = 'Enrolment method "{$a->method}": {$a->disabled}.';
-$string['parentnotfound']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Meta course "{$a->parentname}" not found. {$a->skipped}.';
+$string['invalidop']             = '{$a->line} {$a->linenum} [{$a->op} {$a->method}]: Invalid operation.';
+$string['methoddisabled']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: {$a->disabled}. {$a->skipped}.';
+$string['methoddisabledwarning'] = 'Enrolment method "{$a->methodname}": {$a->disabled}.';
+$string['parentnotfound']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Meta course "{$a->parentname}" not found. {$a->skipped}.';
 $string['pluginname']            = 'Upload enrolment methods';
 $string['pluginname_help']       = 'Upload enrolment methods from a CSV file to set enrolment methods for a range of courses in a single operation.';
 $string['privacy:metadata']      = 'The Upload enrolment methods administration tool does not store personal data.';
-$string['reladded']              = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: "{$a->targetname}" ({$a->targetid}) successfully linked to "{$a->parentname}" ({$a->parentid}) with name "{$a->instancename}". {$a->status}.';
-$string['reladderror']           = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Error linking "{$a->targetname}" ({$a->targetid}) to "{$a->parentname}" ({$a->parentid}). {$a->skipped}.';
-$string['relalreadyexists']      = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: "{$a->targetname}" ({$a->targetid}) already linked to "{$a->parentname}" ({$a->parentid}). {$a->skipped}.';
-$string['reldeleted']            = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Deleted "{$a->instancename}" method from "{$a->targetname}" ({$a->targetid}).';
-$string['reldoesntexist']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: "{$a->targetname}" ({$a->targetid}) not linked to "{$a->parentname}" ({$a->parentid}), so can\'t be removed. {$a->skipped}.';
-$string['relupdated']            = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Updated "{$a->instancename}" method in "{$a->targetname}" ({$a->targetid}). {$a->status}.';
-$string['targetisparent']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: "{$a->targetname}" ({$a->targetid}) is a parent of "{$a->parentname}" ({$a->parentid}), so cannot be added as its target. {$a->skipped}.';
-$string['targetnotfound']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Unknown course "{$a->targetname}". {$a->skipped}.';
-$string['toofewcols']            = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Too few columns, expecting 6. {$a->skipped}.';
-$string['toomanycols']           = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Too many columns, expecting 6. {$a->skipped}.';
+$string['reladded']              = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Course "{$a->targetname}" ({$a->targetid}) linked to "{$a->parentname}" ({$a->parentid}) with name "{$a->instancename}". {$a->status}.';
+$string['reladderror']           = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Error linking "{$a->targetname}" ({$a->targetid}) to "{$a->parentname}" ({$a->parentid}). {$a->skipped}.';
+$string['relalreadyexists']      = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: "{$a->targetname}" ({$a->targetid}) already linked to "{$a->parentname}" ({$a->parentid}). {$a->skipped}.';
+$string['reldeleted']            = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Deleted "{$a->instancename}" method from "{$a->targetname}" ({$a->targetid}).';
+$string['reldoesntexist']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: "{$a->targetname}" ({$a->targetid}) not linked to "{$a->parentname}" ({$a->parentid}), so cannott be removed. {$a->skipped}.';
+$string['relupdated']            = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Updated "{$a->instancename}" method in "{$a->targetname}" ({$a->targetid}). {$a->status}.';
+$string['targetisparent']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: "{$a->targetname}" ({$a->targetid}) is a parent of "{$a->parentname}" ({$a->parentid}), so cannot be added as its target. {$a->skipped}.';
+$string['targetnotfound']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Unknown course "{$a->targetname}". {$a->skipped}.';
+$string['toofewcols']            = '{$a->line} {$a->linenum} [{$a->op} {$a->method}]: Too few columns, expecting 6. {$a->skipped}.';
+$string['toomanycols']           = '{$a->line} {$a->linenum} [{$a->op} {$a->method}]: Too many columns, expecting 6. {$a->skipped}.';

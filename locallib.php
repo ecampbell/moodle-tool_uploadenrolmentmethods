@@ -94,7 +94,7 @@ class tool_uploadenrolmentmethods_handler {
      *
      * Opens the file, loops through each row. Cleans the values in each column,
      * checks that the operation is valid and the methods exist. If all is well,
-     * adds, modifies or removes the enrolment method metalink in column 3 to/from the course in column 2
+     * adds, updates or deletes the enrolment method metalink in column 3 to/from the course in column 2
      * context as specified.
      * Returns a report of successes and failures.
      *
@@ -106,6 +106,11 @@ class tool_uploadenrolmentmethods_handler {
         global $DB;
         $report = array();
 
+        // Prepare reporting message strings.
+        $strings = new stdClass;
+        $strings->skipped = get_string('skipped');
+        $strings->disabled = get_string('statusdisabled', 'enrol_manual');
+
         // Set a counter so we can report line numbers for errors.
         $line = 0;
 
@@ -115,6 +120,13 @@ class tool_uploadenrolmentmethods_handler {
         // Loop through each row of the file.
         while ($csvrow = fgetcsv($file)) {
             $line++;
+            $strings->linenum = $line;
+
+            // Skip any comment lines starting with # or ;.
+            if ($csvrow[0][0] == '#' or $csvrow[0][0] == ';') {
+                $report[] = get_string('csvcomment', 'tool_uploadblocksettings', $strings);
+                continue;
+            }
 
             // Check for the correct number of columns.
             if (count($csvrow) < 6) {
@@ -133,15 +145,14 @@ class tool_uploadenrolmentmethods_handler {
             $parentid = clean_param($csvrow[3], PARAM_TEXT);
             $disabledstatus = clean_param($csvrow[4], PARAM_TEXT);
 
-            // Prepare reporting message strings.
-            $strings = new stdClass;
+            // Add line-specific reporting message strings.
             $strings->linenum = $line;
             $strings->op = $op;
-            $strings->method = get_string('pluginname', 'enrol_' . $method);
+            $strings->method =  $method;
+            $strings->methodname = get_string('pluginname', 'enrol_' . $method);
             $strings->targetname = $targetshortname;
             $strings->parentname = $parentid;
             $strings->line = get_string('csvline', 'tool_uploadcourse');
-            $strings->skipped = get_string('skipped');
             $strings->status = get_string('statusenabled', 'enrol_manual');
 
             if ($op == 'add') {
@@ -212,7 +223,7 @@ class tool_uploadenrolmentmethods_handler {
                     $report[] = get_string('reldoesntexist', 'tool_uploadenrolmentmethods', $strings);
                 }
             } else if ($op == 'upd') {
-                // If we're modifying, check the parent is already linked to the target, and change the status.
+                // If we're updating, check the parent is already linked to the target, and change the status.
                 // Skip the line if they're not.
                 $instanceparams = array(
                     'courseid' => $target->id,

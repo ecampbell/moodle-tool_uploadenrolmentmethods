@@ -1,2 +1,2 @@
-add,cohort,shortname2,cohort1,1,
-mod,cohort,shortname2,cohort1,0,dummy
+add,cohort,C101,cohort1,1,
+upd,cohort,C101,cohort1,0,dummy
