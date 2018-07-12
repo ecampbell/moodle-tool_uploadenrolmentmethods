@@ -148,7 +148,7 @@ class tool_uploadenrolmentmethods_handler {
             // Add line-specific reporting message strings.
             $strings->linenum = $line;
             $strings->op = $op;
-            $strings->method =  $method;
+            $strings->method = $method;
             $strings->methodname = get_string('pluginname', 'enrol_' . $method);
             $strings->targetname = $targetshortname;
             $strings->parentname = $parentid;

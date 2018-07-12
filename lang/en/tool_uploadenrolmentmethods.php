@@ -37,7 +37,7 @@ $string['csvfile_help']          = 'The format of the CSV file must be as follow
 * Allowed methods are meta and cohort.
 * Allowed operations are add, del, upd
 * The allowed disabled status values are 1 (enable) and 0 (disable).
-* The group field is the name of a group into which enrolled students should be placed. 
+* The group field is the name of a group into which enrolled students should be placed.
   It will be created if it doesn\'t already exist (this field is not yet supported).';
 $string['heading']               = 'Upload course enrolment methods from a CSV file';
 $string['invalidmethod']         = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Invalid method.';
