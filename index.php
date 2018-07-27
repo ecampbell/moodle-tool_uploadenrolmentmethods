@@ -17,13 +17,11 @@
 /**
  * Displays the form and processes the form submission.
  *
- *
  * @package    tool_uploadenrolmentmethods
  * @copyright  2018 Eoin Campbell
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// Include config.php.
 require_once(__DIR__.'/../../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 
@@ -105,24 +103,12 @@ if (!$data) { // Display the form.
 
 } else {      // Process the CSV file.
 
-    // Set debug level to a minimum of NORMAL: Show errors, warnings and notices.
-    $debuglevel = $CFG->debug;
-    $debugdisplay = $CFG->debugdisplay;
-    if ($CFG->debug < 15) {
-        $CFG->debug = 15;
-    }
-    $CFG->debugdisplay = true;
-
     // Process the CSV file, reporting issues as we go.
     $handler = new tool_uploadenrolmentmethods_handler($data->csvfile);
     $report = $handler->process();
     echo $report;
 
     echo $OUTPUT->continue_button($url);
-
-    // Done, revert debug level.
-    $CFG->debug = $debuglevel;
-    $CFG->debugdisplay = $debugdisplay;
 }
 
 // Footer.
