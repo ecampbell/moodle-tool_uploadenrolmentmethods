@@ -16,7 +16,7 @@
 
 
 /**
- * Defines the capabilities for the Metacourse Link block
+ * Defines the capabilities for the upload enrolment methods plugin
  *
  * @package    tool_uploadenrolmentmethods
  * @copyright   2018 Eoin Campbell

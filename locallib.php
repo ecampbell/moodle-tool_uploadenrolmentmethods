@@ -24,6 +24,10 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+// Development: turn on all debug messages and strict warnings.
+define('DEBUG_ENROLMENTMETHODS', E_ALL | E_STRICT);
+// define('DEBUG_ENROLMENTMETHODS', DEBUG_NONE);
+
 require_once($CFG->dirroot.'/lib/enrollib.php');
 require_once($CFG->dirroot.'/enrol/meta/locallib.php');
 require_once($CFG->dirroot.'/enrol/cohort/lib.php');
@@ -94,7 +98,7 @@ class tool_uploadenrolmentmethods_handler {
      *
      * Opens the file, loops through each row. Cleans the values in each column,
      * checks that the operation is valid and the methods exist. If all is well,
-     * adds, modifies or removes the enrolment method metalink in column 3 to/from the course in column 2
+     * adds, updates or deletes the enrolment method metalink in column 3 to/from the course in column 2
      * context as specified.
      * Returns a report of successes and failures.
      *
@@ -106,6 +110,11 @@ class tool_uploadenrolmentmethods_handler {
         global $DB;
         $report = array();
 
+        // Prepare reporting message strings.
+        $strings = new stdClass;
+        $strings->skipped = get_string('skipped');
+        $strings->disabled = get_string('statusdisabled', 'enrol_manual');
+
         // Set a counter so we can report line numbers for errors.
         $line = 0;
 
@@ -115,6 +124,13 @@ class tool_uploadenrolmentmethods_handler {
         // Loop through each row of the file.
         while ($csvrow = fgetcsv($file)) {
             $line++;
+            $strings->linenum = $line;
+
+            // Skip any comment lines starting with # or ;.
+            if ($csvrow[0][0] == '#' or $csvrow[0][0] == ';') {
+                $report[] = get_string('csvcomment', 'tool_uploadblocksettings', $strings);
+                continue;
+            }
 
             // Check for the correct number of columns.
             if (count($csvrow) < 6) {
@@ -132,16 +148,17 @@ class tool_uploadenrolmentmethods_handler {
             $targetshortname = clean_param($csvrow[2], PARAM_TEXT);
             $parentid = clean_param($csvrow[3], PARAM_TEXT);
             $disabledstatus = clean_param($csvrow[4], PARAM_TEXT);
+            $groupname = clean_param($csvrow[5], PARAM_TEXT);
 
-            // Prepare reporting message strings.
-            $strings = new stdClass;
+            // Add line-specific reporting message strings.
             $strings->linenum = $line;
             $strings->op = $op;
-            $strings->method = get_string('pluginname', 'enrol_' . $method);
+            $strings->method = $method;
+            $strings->methodname = get_string('pluginname', 'enrol_' . $method);
             $strings->targetname = $targetshortname;
             $strings->parentname = $parentid;
+            $strings->groupname = $groupname;
             $strings->line = get_string('csvline', 'tool_uploadcourse');
-            $strings->skipped = get_string('skipped');
             $strings->status = get_string('statusenabled', 'enrol_manual');
 
             if ($op == 'add') {
@@ -212,7 +229,7 @@ class tool_uploadenrolmentmethods_handler {
                     $report[] = get_string('reldoesntexist', 'tool_uploadenrolmentmethods', $strings);
                 }
             } else if ($op == 'upd') {
-                // If we're modifying, check the parent is already linked to the target, and change the status.
+                // If we're updating, check the parent is already linked to the target, and change the status.
                 // Skip the line if they're not.
                 $instanceparams = array(
                     'courseid' => $target->id,
@@ -232,29 +249,42 @@ class tool_uploadenrolmentmethods_handler {
                 }
             } else if ($op == 'add') {
                 // If we're adding, check that the parent is not already linked to the target, and add them.
-                // Skip the line if they are.
+                // Array of parameters to check if meta instance is circular.
                 $instanceparams1 = array(
                     'courseid' => $parent->id,
                     'customint1' => $target->id,
                     'enrol' => $method
                 );
+                // Array of parameters to check if instance already exists.
                 $instanceparams2 = array(
                     'courseid' => $target->id,
                     'customint1' => $parent->id,
                     'enrol' => $method
                 );
+                // Array of parameters to add an instance.
+                $instanceparams3 = array(
+                    'customint1' => $parent->id,
+                );
+                // If method members should be added to a group, create it or get its ID.
+                if ($groupname != '') {
+                    $instanceparams3['customint2'] = uploadenrolmentmethods_get_group($target->id, $groupname);
+                }
+
+                // @codingStandardsIgnoreLine 
+                debugging(__FUNCTION__ . " [" . __LINE__ . "]: instanceparams3 = " . str_replace("\n", "", print_r($instanceparams3, true)), DEBUG_ENROLMENTMETHODS);
                 if ($method == 'meta' && ($instance = $DB->get_record('enrol', $instanceparams1))) {
                     $report[] = get_string('targetisparent', 'tool_uploadenrolmentmethods', $strings);
                 } else if ($instance = $DB->get_record('enrol', $instanceparams2)) {
                     $report[] = get_string('relalreadyexists', 'tool_uploadenrolmentmethods', $strings);
-                } else if ($instance = $enrol->add_instance($target, array('customint1' => $parent->id))) {
+                } else if ($instanceid = $enrol->add_instance($target, $instanceparams3)) {
                     // Successfully added a valid new instance, so now instantiate it.
+                    debugging(__FUNCTION__ . " [" . __LINE__ . "]: instanceid = $instanceid", DEBUG_ENROLMENTMETHODS);
                     // Synchronise the enrolment.
                     if ($method == 'meta') {
-                        enrol_meta_sync($instance->courseid);
+                        enrol_meta_sync($instanceparams3['customint1']);
                     } else if ($method == 'cohort') {
                         $trace = new null_progress_trace();
-                        enrol_cohort_sync($trace, $instance->courseid);
+                        enrol_cohort_sync($trace, $target->id);
                         $trace->finished();
                     }
 
@@ -279,7 +309,33 @@ class tool_uploadenrolmentmethods_handler {
 }
 
 /**
- * An exception for reporting errors when processing metalink files
+ * Get the group ID, creating a new group with the specified group name if necessary.
+ *
+ * @param int $courseid the course ID
+ * @param string $groupname the name of the group to create or 
+ * @return int $groupid Group ID for this cohort.
+ */
+function uploadenrolmentmethods_get_group($courseid, $groupname) {
+    global $DB, $CFG;
+
+    require_once($CFG->dirroot.'/group/lib.php');
+
+    // Check to see if the group name already exists in this course.
+    if ($DB->record_exists('groups', array('name' => $groupname, 'courseid' => $courseid))) {
+        $group = $DB->get_record('groups', array('name' => $groupname, 'courseid' => $courseid));
+        return $group->id;
+    }
+    // The named group doesn't exist, so create a new one in the course.
+    $groupdata = new stdClass();
+    $groupdata->courseid = $courseid;
+    $groupdata->name = $groupname;
+    $groupid = groups_create_group($groupdata);
+
+    return $groupid;
+}
+
+/**
+ * An exception for reporting errors when processing files
  *
  * Extends the moodle_exception with an http property, to store an HTTP error
  * code for responding to AJAX requests.

@@ -85,12 +85,12 @@ if (!$data) { // Display the form.
 
     $displaymanageenrollink = 0;
     if (!enrol_is_enabled('meta')) {
-        $strings->method = get_string('pluginname', 'enrol_meta');
+        $strings->methodname = get_string('pluginname', 'enrol_meta');
         echo html_writer::tag('div', get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods', $strings));
         $displaymanageenrollink = 1;
     }
     if (!enrol_is_enabled('cohort')) {
-        $strings->method = get_string('pluginname', 'enrol_cohort');
+        $strings->methodname = get_string('pluginname', 'enrol_cohort');
         echo html_writer::tag('div', get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods', $strings));
         $displaymanageenrollink = 1;
     }

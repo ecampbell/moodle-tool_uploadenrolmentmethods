@@ -1,29 +1,41 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.0.1] - 2018-07-27
+### Added
+- Added support for assigning to a group.
+
+## [1.0.0] - 2018-07-11
+### Added
+- Tidied up code for initial approved public release.
+
+## [0.7.3] - 2018-05-26
+### Added
+- Modify support for Privacy API for PHP 7.0 (3.4).
+
 ## [0.7.2] - 2018-05-26
 ### Added
-- Modify support for Privacy API for PHP 5.6 (2.9 - 3.3)
+- Modify support for Privacy API for PHP 5.6 (2.9 - 3.3).
 
 ## [0.7.1] - 2018-05-14
 ### Added
-- Add support for Privacy API in preparation for GDPR
+- Add support for Privacy API in preparation for GDPR.
 
 ## [0.7.0] - 2018-05-08
 ### Added
-- Use course shortnames, not idnumbers as unique identifier
+- Use course shortnames, not idnumbers as unique identifier.
 
 ## [0.6.3] - 2018-05-07
 ### Added
-- Fixed reporting bug in cohort enrolment
+- Fixed reporting bug in cohort enrolment.
 
 ## [0.6.1] - 2018-05-04
 ### Added
-- Added clearer, more language-dependent report strings
+- Added clearer, more language-dependent report strings.
 
 ## [0.6.0] - 2018-05-03
 ### Added
-- Added support for cohort enrolment method
+- Added support for cohort enrolment method.
 
 ## [0.5.1] - 2018-04-16
 ### Added
