@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.0.1] - 2018-07-27
+### Added
+- Added support for assigning to a group.
+
 ## [1.0.0] - 2018-07-11
 ### Added
 - Tidied up code for initial approved public release.
