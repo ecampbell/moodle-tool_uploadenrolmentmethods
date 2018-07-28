@@ -24,10 +24,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-// Development: turn on all debug messages and strict warnings.
-define('DEBUG_ENROLMENTMETHODS', E_ALL | E_STRICT);
-// define('DEBUG_ENROLMENTMETHODS', DEBUG_NONE);
-
 require_once($CFG->dirroot.'/lib/enrollib.php');
 require_once($CFG->dirroot.'/enrol/meta/locallib.php');
 require_once($CFG->dirroot.'/enrol/cohort/lib.php');
