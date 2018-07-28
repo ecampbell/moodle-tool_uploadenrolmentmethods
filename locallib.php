@@ -301,7 +301,7 @@ class tool_uploadenrolmentmethods_handler {
  * Get the group ID, creating a new group with the specified group name if necessary.
  *
  * @param int $courseid the course ID
- * @param string $groupname the name of the group to create or 
+ * @param string $groupname the name of the group to create or use
  * @return int $groupid Group ID for this cohort.
  */
 function uploadenrolmentmethods_get_group($courseid, $groupname) {
