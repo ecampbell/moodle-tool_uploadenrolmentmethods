@@ -4,12 +4,11 @@ Upload enrolment methods from a CSV file into a range of courses
 
 ## Description ##
 
-The Upload course enrolment methods plugin for Moodle allows you to add 
-enrolment methods to a range of courses at the same time. Only the Course Metalink
-is supported at the moment. You can also delete, enable or disable existing enrolment 
-methods in a course. 
-
-The plugin is strongly based on the [Upload Metacourse links (block_metalink)](https://moodle.org/plugins/block_metalink) plugin developed by Mark Johnson, and uses code from it.
+The Upload course enrolment methods plugin for Moodle allows you to add enrolment methods to a range of courses at the same time. 
+The Course meta link and Cohort sync methods are supported.
+You can also delete, enable or disable existing enrolment methods in a course. 
+The plugin is strongly based on the [Upload Metacourse links (block_metalink)](https://moodle.org/plugins/block_metalink) plugin developed by Mark Johnson, 
+and uses code from it.
 
 ## Requirements ##
 
@@ -43,7 +42,20 @@ There are no configurable settings for this plugin.
 Use the command __Administration &gt; Site administration &gt; Plugins &gt; Enrolments &gt; Upload enrolment methods__
 to upload a CSV file containing lines of the form:
 
-    operation, enrolment method, target course shortname, meta course shortname or cohort idnumber, disabled status, group
+    operation, enrolment method, target course shortname, meta course shortname or cohort idnumber, disabled status, group name
+
+The format of the CSV file is as follows:
+* Lines beginning with a # or ; character are comments, and skipped.
+* Each line of the file contains one record.
+* Each record is a series of data in a fixed order separated by commas.
+* All fields are required.
+* The fields are: operation, enrolment method, target course shortname, parent course shortname or cohort idnumber, disabled status, group name.
+* Allowed methods are meta and cohort.
+* Allowed operations are add, del, upd
+* The allowed disabled status field values are 1 (disable) and 0 (enable).
+* The group name field is the name of a group into which enrolled students should be placed.
+  It will be created if it doesn't already exist.
+
 
 ## License ##
 

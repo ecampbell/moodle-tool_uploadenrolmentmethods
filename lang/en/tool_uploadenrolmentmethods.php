@@ -33,12 +33,12 @@ $string['csvfile_help']          = 'The format of the CSV file must be as follow
 * Each line of the file contains one record.
 * Each record is a series of data in a fixed order separated by commas.
 * All fields are required.
-* Required fields are: operation, enrolment method, target course shortname, parent course shortname or cohort idnumber, disabled, group.
+* The fields are: operation, enrolment method, target course shortname, parent course shortname or cohort idnumber, disabled status, group name.
 * Allowed methods are meta and cohort.
-* Allowed operations are add, del, upd
-* The allowed disabled status values are 1 (enable) and 0 (disable).
-* The group field is the name of a group into which enrolled students should be placed.
-  It will be created if it doesn\'t already exist (this field is not yet supported).';
+* Allowed operations are add, del, upd.
+* The allowed disabled status field values are 1 (disable) and 0 (enable).
+* The group name field is the name of a group into which enrolled students should be placed.
+  It will be created if it doesn\'t already exist.';
 $string['heading']               = 'Upload course enrolment methods from a CSV file';
 $string['invalidmethod']         = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Invalid method.';
 $string['invalidop']             = '{$a->line} {$a->linenum} [{$a->op} {$a->method}]: Invalid operation.';
