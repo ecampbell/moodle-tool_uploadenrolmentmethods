@@ -110,6 +110,8 @@ class tool_uploadenrolmentmethods_handler {
         $strings = new stdClass;
         $strings->skipped = get_string('skipped');
         $strings->disabled = get_string('statusdisabled', 'enrol_manual');
+        $strings->line = get_string('csvline', 'tool_uploadcourse');
+        $strings->status = get_string('statusenabled', 'enrol_manual');
 
         // Set a counter so we can report line numbers for errors.
         $line = 0;
@@ -130,11 +132,11 @@ class tool_uploadenrolmentmethods_handler {
 
             // Check for the correct number of columns.
             if (count($csvrow) < 6) {
-                $report[] = get_string('toofewcols', 'tool_uploadenrolmentmethods', $line);
+                $report[] = get_string('toofewcols', 'tool_uploadenrolmentmethods', $strings);
                 continue;
             }
             if (count($csvrow) > 6) {
-                $report[] = get_string('toomanycols', 'tool_uploadenrolmentmethods', $line);
+                $report[] = get_string('toomanycols', 'tool_uploadenrolmentmethods', $strings);
                 continue;
             }
 
@@ -152,8 +154,6 @@ class tool_uploadenrolmentmethods_handler {
             $strings->methodname = get_string('pluginname', 'enrol_' . $method);
             $strings->targetname = $targetshortname;
             $strings->parentname = $parentid;
-            $strings->line = get_string('csvline', 'tool_uploadcourse');
-            $strings->status = get_string('statusenabled', 'enrol_manual');
 
             if ($op == 'add') {
                 $strings->oplabel = get_string('add');

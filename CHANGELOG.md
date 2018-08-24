@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 2018-08-24
+### Added
+- Fixed incorrect error messages.
+
 ## [1.0.0] - 2018-07-11
 ### Added
 - Tidied up code for initial approved public release.

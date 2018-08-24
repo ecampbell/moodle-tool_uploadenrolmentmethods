@@ -56,5 +56,5 @@ $string['reldoesntexist']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a-
 $string['relupdated']            = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Updated "{$a->instancename}" method in "{$a->targetname}" ({$a->targetid}). {$a->status}.';
 $string['targetisparent']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: "{$a->targetname}" ({$a->targetid}) is a parent of "{$a->parentname}" ({$a->parentid}), so cannot be added as its target. {$a->skipped}.';
 $string['targetnotfound']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Unknown course "{$a->targetname}". {$a->skipped}.';
-$string['toofewcols']            = '{$a->line} {$a->linenum} [{$a->op} {$a->method}]: Too few columns, expecting 6. {$a->skipped}.';
-$string['toomanycols']           = '{$a->line} {$a->linenum} [{$a->op} {$a->method}]: Too many columns, expecting 6. {$a->skipped}.';
+$string['toofewcols']            = '{$a->line} {$a->linenum}: Too few columns, expecting 6. {$a->skipped}.';
+$string['toomanycols']           = '{$a->line} {$a->linenum}: Too many columns, expecting 6. {$a->skipped}.';
