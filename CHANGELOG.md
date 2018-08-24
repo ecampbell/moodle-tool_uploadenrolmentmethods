@@ -1,9 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [1.0.2] - 2018-08-24
+## [1.1.1] - 2018-08-24
 ### Added
 - Fixed incorrect error messages.
+
+## [1.1.0] - 2018-07-28
+### Added
+- Fix cohort enrolment to set role as student.
+
+## [1.0.1] - 2018-07-27
+### Added
+- Added support for assigning to a group.
 
 ## [1.0.0] - 2018-07-11
 ### Added
