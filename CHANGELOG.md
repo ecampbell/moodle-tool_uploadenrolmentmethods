@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2019-02-27
+### Added
+- Remove unused capability settings.
+
 ## [1.1.1] - 2018-08-24
 ### Added
 - Fixed incorrect error messages.
