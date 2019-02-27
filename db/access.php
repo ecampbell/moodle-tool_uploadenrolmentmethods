@@ -26,25 +26,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-
-    'tool/uploadenrolmentmethods:myaddinstance' => array(
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        )
-    ),
-
-    'tool/uploadenrolmentmethods:addinstance' => array(
-        'riskbitmask' => RISK_SPAM | RISK_XSS,
-
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        )
-    ),
-
     'tool/uploadenrolmentmethods:use' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
