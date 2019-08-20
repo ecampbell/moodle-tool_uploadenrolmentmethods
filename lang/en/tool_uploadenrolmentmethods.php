@@ -32,13 +32,14 @@ $string['csvfile_help']          = 'The format of the CSV file must be as follow
 * Lines beginning with a # or ; character are comments, and skipped.
 * Each line of the file contains one record.
 * Each record is a series of data in a fixed order separated by commas.
-* All fields are required.
-* The fields are: operation, enrolment method, target course shortname, parent course shortname or cohort idnumber, disabled status, group name.
+* The fields are: operation, enrolment method, target course shortname, parent course shortname or cohort idnumber, disabled status, group name[, role].
+* All fields are required except role, which can be omitted for backwards compatibility.
 * The operations are add, del(ete) and upd(ate).
 * The supported enrolment methods are meta and cohort.
 * The disabled status values are 1 (disabled) or 0 (enabled).
 * Students enrolled via the method will be placed in the group specified in the group name field.
-  The group will be created if it doesn\'t already exist.';
+  The group will be created if it doesn\'t already exist.
+* The role field must be a valid role name such as editingteacher, student, etc.';
 $string['heading']               = 'Upload course enrolment methods from a CSV file';
 $string['invalidmethod']         = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Invalid method.';
 $string['invalidop']             = '{$a->line} {$a->linenum} [{$a->op} {$a->method}]: Invalid operation.';
@@ -52,9 +53,10 @@ $string['reladded']              = '{$a->line} {$a->linenum} [{$a->oplabel} {$a-
 $string['reladderror']           = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Error linking "{$a->targetname}" ({$a->targetid}) to "{$a->parentname}" ({$a->parentid}). {$a->skipped}.';
 $string['relalreadyexists']      = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: "{$a->targetname}" ({$a->targetid}) already linked to "{$a->parentname}" ({$a->parentid}). {$a->skipped}.';
 $string['reldeleted']            = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Deleted "{$a->instancename}" method from "{$a->targetname}" ({$a->targetid}).';
-$string['reldoesntexist']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: "{$a->targetname}" ({$a->targetid}) not linked to "{$a->parentname}" ({$a->parentid}), so cannott be removed. {$a->skipped}.';
+$string['reldoesntexist']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: "{$a->targetname}" ({$a->targetid}) not linked to "{$a->parentname}" ({$a->parentid}), so cannot be removed. {$a->skipped}.';
 $string['relupdated']            = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Updated "{$a->instancename}" method in "{$a->targetname}" ({$a->targetid}). {$a->status}.';
 $string['targetisparent']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: "{$a->targetname}" ({$a->targetid}) is a parent of "{$a->parentname}" ({$a->parentid}), so cannot be added as its target. {$a->skipped}.';
 $string['targetnotfound']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Unknown course "{$a->targetname}". {$a->skipped}.';
-$string['toofewcols']            = '{$a->line} {$a->linenum}: Too few columns, expecting 6. {$a->skipped}.';
-$string['toomanycols']           = '{$a->line} {$a->linenum}: Too many columns, expecting 6. {$a->skipped}.';
+$string['toofewcols']            = '{$a->line} {$a->linenum}: Too few columns, expecting 6/7. {$a->skipped}.';
+$string['toomanycols']           = '{$a->line} {$a->linenum}: Too many columns, expecting 6/7. {$a->skipped}.';
+$string['unknownrole']           = '{$a->line} {$a->linenum}: [{$a->oplabel} {$a->methodname}]: {$a->unknownrole}. {$a->skipped}.';

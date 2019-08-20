@@ -28,6 +28,7 @@ require_once($CFG->dirroot.'/lib/enrollib.php');
 require_once($CFG->dirroot.'/enrol/meta/locallib.php');
 require_once($CFG->dirroot.'/enrol/cohort/lib.php');
 require_once($CFG->dirroot.'/enrol/cohort/locallib.php');
+require_once($CFG->dirroot.'/admin/tool/uploaduser/locallib.php');
 
 /**
  * Validates and processes files for uploading a course enrolment methods CSV file
@@ -100,7 +101,7 @@ class tool_uploadenrolmentmethods_handler {
      *
      * @see open_file()
      * @uses enrol_meta_sync() Meta plugin function for syncing users
-     * @return string A report of successes and failures.S
+     * @return string A report of successes and failures.
      */
     public function process() {
         global $DB;
@@ -112,12 +113,16 @@ class tool_uploadenrolmentmethods_handler {
         $strings->disabled = get_string('statusdisabled', 'enrol_manual');
         $strings->line = get_string('csvline', 'tool_uploadcourse');
         $strings->status = get_string('statusenabled', 'enrol_manual');
+        $strings->role = get_string('unknownrole', 'enrol_manual');
 
         // Set a counter so we can report line numbers for errors.
         $line = 0;
 
         // Open the file.
         $file = $this->open_file();
+
+        // Course roles lookup cache.
+        $rolecache = uu_allowed_roles_cache();
 
         // Loop through each row of the file.
         while ($csvrow = fgetcsv($file)) {
@@ -135,7 +140,7 @@ class tool_uploadenrolmentmethods_handler {
                 $report[] = get_string('toofewcols', 'tool_uploadenrolmentmethods', $strings);
                 continue;
             }
-            if (count($csvrow) > 6) {
+            if (count($csvrow) > 7) {
                 $report[] = get_string('toomanycols', 'tool_uploadenrolmentmethods', $strings);
                 continue;
             }
@@ -147,6 +152,11 @@ class tool_uploadenrolmentmethods_handler {
             $parentid = clean_param($csvrow[3], PARAM_TEXT);
             $disabledstatus = clean_param($csvrow[4], PARAM_TEXT);
             $groupname = clean_param($csvrow[5], PARAM_TEXT);
+            // Handle optional role field, if blank, use 'student' as the default.
+            $rolename = 'student';
+            if (count($csvrow) == 7) {
+                $rolename = clean_param($csvrow[6], PARAM_TEXT);
+            }
 
             // Add line-specific reporting message strings.
             $strings->linenum = $line;
@@ -205,6 +215,15 @@ class tool_uploadenrolmentmethods_handler {
                 continue;
             }
 
+            // Check we have a valid role.
+            if (!array_key_exists($rolename, $rolecache)) {
+                $strings->unknownrole = get_string('unknownrole', 'error', s($rolename));
+                $report[] = get_string('unknownrole', 'tool_uploadenrolmentmethods', $strings);
+                continue;
+            } else {
+                $roleid = $rolecache[$rolename]->id;
+            }
+
             $strings->targetid = $target->id;
             $strings->parentid = $parent->id;
 
@@ -249,12 +268,11 @@ class tool_uploadenrolmentmethods_handler {
                     'enrol' => $method
                 );
 
-                // Array of parameters to add an instance, specifying the required role (student) for cohort enrolments.
-                $studentrole = $DB->get_record('role', array('shortname' => 'student'));
                 $instancenewparams = array(
                     'customint1' => $parent->id,
-                    'roleid' => $studentrole->id
+                    'roleid' => $roleid
                 );
+
                 // If method members should be added to a group, create it or get its ID.
                 if ($groupname != '') {
                     $instancenewparams['customint2'] = uploadenrolmentmethods_get_group($target->id, $groupname);

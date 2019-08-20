@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2019-08-20
+### Added
+- Add support for defining the role associated with the enrolment method.
+
 ## [1.1.2] - 2019-02-27
 ### Added
 - Remove unused capability settings.

@@ -1,0 +1,4 @@
+add,cohort,C101,cohort1,0,Cohort group 1,editingteacher
+upd,cohort,C101,cohort1,1,UndefinedRole,undefined
+del,cohort,C101,cohort2,1,StudentRole
+add,cohort,C101,cohort2,0,StudentRole2,student
