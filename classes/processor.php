@@ -54,9 +54,6 @@ class tool_uploadenrolmentmethods_processor {
     /** @var int line number. */
     protected $linenb = 0;
 
-    /** @var bool whether the process has been started or not. */
-    protected $processstarted = false;
-
     /**
      * Constructor, sets the CSV file reader
      *
@@ -341,8 +338,6 @@ class tool_uploadenrolmentmethods_processor {
         fclose($file);
         return implode("<br/>", $report);
     }
-}
-
 
     /**
      * Parse a line to return an array(column => value)
@@ -363,6 +358,7 @@ class tool_uploadenrolmentmethods_processor {
         }
         return $data;
     }
+}
 
 
 /**
