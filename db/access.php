@@ -15,17 +15,33 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Plugin version and other meta-data are defined here.
+ * Plugin capabilities.
  *
- * @package     tool_uploadenrolmentmethods
- * @copyright   2018 Eoin Campbell
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    tool_uploadenrolmentmethods
+ * @copyright  2015 University of Kent
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'tool_uploadenrolmentmethods';
-$plugin->version   = 2020080901;        // The current module version (Date: YYYYMMDDXX)
-$plugin->requires  = 2015051109;        // Requires Moodle version 2.9.
-$plugin->release   = '1.2.1';
-$plugin->maturity  = MATURITY_STABLE;
+$capabilities = array(
+
+    'tool/uploadenrolmentmethods:delete' => array(
+        'captype' => 'write',
+        'riskbitmask' => RISK_DATALOSS,
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        )
+    ),
+
+    'tool/uploadenrolmentmethods:add' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        )
+    )
+);

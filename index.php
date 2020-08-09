@@ -22,8 +22,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(__DIR__.'/../../../config.php');
-require_once($CFG->libdir.'/adminlib.php');
+require_once(__DIR__ . '/../../../config.php');
+require_once($CFG->libdir . '/adminlib.php');
+require_once($CFG->libdir . '/csvlib.class.php');
 
 // Include our function library.
 $pluginname = 'uploadenrolmentmethods';
@@ -35,9 +36,6 @@ global $CFG, $OUTPUT, $USER, $SITE, $PAGE;
 // Ensure only administrators have access.
 $homeurl = new moodle_url('/');
 require_login();
-if (!is_siteadmin()) {
-    redirect($homeurl, "This feature is only available for site administrators.", 5);
-}
 
 // URL Parameters.
 // There are none.
@@ -56,11 +54,6 @@ if ($CFG->branch >= 25) { // Moodle 2.5+.
     $context = get_system_context();
 }
 
-$PAGE->set_pagelayout('admin');
-$PAGE->set_url($url);
-$PAGE->set_context($context);
-$PAGE->set_title($title);
-$PAGE->set_heading($heading);
 admin_externalpage_setup('tool_'.$pluginname); // Sets the navbar & expands navmenu.
 
 // Set up the form.
@@ -72,10 +65,37 @@ if ($form->is_cancelled()) {
 echo $OUTPUT->header();
 
 // Display or process the form.
+if ($data = $form->get_data()) {
+    // Process the CSV file.
+    $importid = csv_import_reader::get_new_iid($pluginname);
+    $cir = new csv_import_reader($importid, $pluginname);
+    $content = $form->get_file_content('csvfile');
+    // Check if the first line contains an explicit heading row, with 'op' as the first field column.
+    if (substring($content, 0, 2) == 'op') {
+        // Contains a heading row, new style CSV file.
+        $readcount = $cir->load_csv_content($content, $data->encoding, $data->delimiter_name);
+        unset($content);
+        if ($readcount === false) {
+            print_error('csvfileerror', 'tool_uploadcourse', $url, $cir->get_error());
+        } else if ($readcount == 0) {
+            print_error('csvemptyfile', 'error', $url, $cir->get_error());
+        }
 
-$data = $form->get_data();
-if (!$data) { // Display the form.
+        // We've got a live file with some entries, so process it.
+        $processor = new tool_uploadenrolmentmethods_processor($cir);
+        echo $OUTPUT->heading(get_string('uploadenrolmentmethodsresult', 'tool_uploadenrolmentmethods'));
+        $processor->execute(new tool_uploadenrolmentmethods_tracker(tool_uploadenrolmentmethods_tracker::NO_OUTPUT));
+        echo $OUTPUT->continue_button($returnurl);
+    } else {
+        // No heading row, old style CSV file.
+        $handler = new tool_uploadenrolmentmethods_handler($data->csvfile, $cir);
+        $report = $handler->process();
+        echo $report;
+    }
 
+    echo $OUTPUT->continue_button($url);
+} else {
+    // Display the form.
     echo $OUTPUT->heading($heading);
 
     $strings = new stdClass;
@@ -97,18 +117,9 @@ if (!$data) { // Display the form.
         $strmanage = get_string('manageenrols', 'enrol');
         echo html_writer::tag('a', $strmanage, array('href' => $manageenrolsurl));
     }
-
-    // Display the form.
     $form->display();
-
-} else {      // Process the CSV file.
-
-    // Process the CSV file, reporting issues as we go.
-    $handler = new tool_uploadenrolmentmethods_handler($data->csvfile);
-    $report = $handler->process();
-    echo $report;
-
-    echo $OUTPUT->continue_button($url);
+    echo $OUTPUT->footer();
+    die();
 }
 
 // Footer.
