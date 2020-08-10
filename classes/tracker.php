@@ -208,13 +208,19 @@ class tool_uploadenrolmentmethods_tracker {
             echo html_writer::start_tag('tr', array('class' => 'heading r' . $this->rownb));
             echo html_writer::tag('th', get_string('csvline', 'tool_uploadcourse'),
                 array('class' => 'c' . $ci++, 'scope' => 'col'));
-            echo html_writer::tag('th', get_string('result', 'tool_uploadcourse'), array('class' => 'c' . $ci++, 'scope' => 'col'));
-            echo html_writer::tag('th', get_string('id', 'tool_uploadenrolmentmethods'), array('class' => 'c' . $ci++, 'scope' => 'col'));
-            echo html_writer::tag('th', get_string('shortname'), array('class' => 'c' . $ci++, 'scope' => 'col'));
-            echo html_writer::tag('th', get_string('cohort') . '/' . get_string('metacourse'), array('class' => 'c' . $ci++, 'scope' => 'col'));
-            echo html_writer::tag('th', get_string('methodname', 'tool_uploadenrolmentmethods'), array('class' => 'c' . $ci++, 'scope' => 'col'));
+            echo html_writer::tag('th', get_string('result', 'tool_uploadcourse'),
+                array('class' => 'c' . $ci++, 'scope' => 'col'));
+            echo html_writer::tag('th', get_string('id', 'tool_uploadenrolmentmethods'),
+                array('class' => 'c' . $ci++, 'scope' => 'col'));
+            echo html_writer::tag('th', get_string('shortname'),
+                array('class' => 'c' . $ci++, 'scope' => 'col'));
+            echo html_writer::tag('th', get_string('cohort') . '/' . get_string('metacourse'),
+                array('class' => 'c' . $ci++, 'scope' => 'col'));
+            echo html_writer::tag('th', get_string('methodname', 'tool_uploadenrolmentmethods'),
+                array('class' => 'c' . $ci++, 'scope' => 'col'));
             echo html_writer::tag('th', get_string('status'), array('class' => 'c' . $ci++, 'scope' => 'col'));
-            echo html_writer::tag('th', get_string('skipped', 'tool_uploadenrolmentmethods'), array('class' => 'c' . $ci++, 'scope' => 'col'));
+            echo html_writer::tag('th', get_string('skipped', 'tool_uploadenrolmentmethods'),
+                array('class' => 'c' . $ci++, 'scope' => 'col'));
             echo html_writer::end_tag('tr');
         }
     }
