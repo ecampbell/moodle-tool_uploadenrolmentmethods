@@ -62,9 +62,10 @@ class tool_uploadenrolmentmethods_processor {
     public function __construct(csv_import_reader $cir) {
         $this->cir = $cir;
         $this->columns = $cir->get_columns();
-        $this->defaults = $defaults;
+        // $this->defaults = $defaults;
         $this->validate();
         $this->reset();
+        $this->linenb++;
     }
 
 
@@ -89,9 +90,11 @@ class tool_uploadenrolmentmethods_processor {
         global $DB;
 
         if (empty($tracker)) {
-            $tracker = new tool_uploadcourse_tracker(tool_uploadcourse_tracker::NO_OUTPUT);
+            $tracker = new tool_uploadcourse_tracker(tool_uploadcourse_tracker::OUTPUT_HTML);
         }
         $tracker->start();
+
+        $trace = new html_progress_trace();
 
         $total = 0;
         $created = 0;
@@ -106,99 +109,54 @@ class tool_uploadenrolmentmethods_processor {
         $report = array();
 
         // Prepare reporting message strings.
-        $strings = new stdClass;
-        $strings->skipped = get_string('skipped');
-        $strings->disabled = get_string('statusdisabled', 'enrol_manual');
-        $strings->line = get_string('csvline', 'tool_uploadcourse');
-        $strings->status = get_string('statusenabled', 'enrol_manual');
-        $strings->role = get_string('unknownrole', 'enrol_manual');
+        $strings = array();
+        $strings['skipped'] = get_string('skipped');
+        $strings['status'] = get_string('statusenabled', 'enrol_manual');
+        // $strings['role'] = get_string('unknownrole', 'enrol_manual');
 
-        // Loop over the CSV lines.
+        // Course roles lookup cache.
+        $rolecache = uu_allowed_roles_cache();
+        // $trace->output(var_dump($rolecache));
+
+        // Loop through each row of the file.
         while ($line = $this->cir->next()) {
             $this->linenb++;
             $total++;
 
             $data = $this->parse_line($line);
-            $course = $this->get_course($data);
-            if ($course->prepare()) {
-                $course->proceed();
 
-                $status = $course->get_statuses();
-                if (array_key_exists('coursecreated', $status)) {
-                    $created++;
-                } else if (array_key_exists('courseupdated', $status)) {
-                    $updated++;
-                } else if (array_key_exists('coursedeleted', $status)) {
-                    $deleted++;
-                }
-
-                $data = array_merge($data, $course->get_data(), array('id' => $course->get_id()));
-                $tracker->output($this->linenb, true, $status, $data);
-            } else {
-                $errors++;
-                $tracker->output($this->linenb, false, $course->get_errors(), $data);
-            }
-        }
-
-        $tracker->finish();
-        $tracker->results($total, $created, $updated, $deleted, $errors);
-
-        // Open the file.
-        $file = $this->open_file();
-
-        // Course roles lookup cache.
-        $rolecache = uu_allowed_roles_cache();
-
-        // Loop through each row of the file.
-        while ($csvrow = fgetcsv($file)) {
-            $line++;
-            $strings->linenum = $line;
-
-            // Skip any comment lines starting with # or ;.
-            if ($csvrow[0][0] == '#' or $csvrow[0][0] == ';') {
-                $report[] = get_string('csvcomment', 'tool_uploadenrolmentmethods', $strings);
-                continue;
-            }
-
-            // Check for the correct number of columns.
-            if (count($csvrow) < 6) {
-                $report[] = get_string('toofewcols', 'tool_uploadenrolmentmethods', $strings);
-                continue;
-            }
-            if (count($csvrow) > 7) {
-                $report[] = get_string('toomanycols', 'tool_uploadenrolmentmethods', $strings);
-                continue;
-            }
+            $trace->output("Line: $this->linenb: " . $data['operation']);
 
             // Read in clean parameters to prevent sql injection.
-            $op = clean_param($csvrow[0], PARAM_TEXT);
-            $method = clean_param($csvrow[1], PARAM_TEXT);
-            $targetshortname = clean_param($csvrow[2], PARAM_TEXT);
-            $parentid = clean_param($csvrow[3], PARAM_TEXT);
-            $disabledstatus = clean_param($csvrow[4], PARAM_TEXT);
-            $groupname = clean_param($csvrow[5], PARAM_TEXT);
+            $op = $data['operation'];
+            $method = $data['method'];
+            $targetshortname = $data['shortname'];
+            $parentid = $data['metacohort'];
+            $disabledstatus = $data['disabled'];
+            $groupname = $data['group'];
             // Handle optional role field, if blank, use 'student' as the default.
             $rolename = 'student';
-            if (count($csvrow) == 7) {
-                $rolename = clean_param($csvrow[6], PARAM_TEXT);
+            if (isset($data['role']) && $data['role'] !== '' ) {
+                $rolename = $data['role'];
+                $strings['rolelabel'] = $rolename;
             }
 
             // Add line-specific reporting message strings.
-            $strings->linenum = $line;
-            $strings->op = $op;
-            $strings->method = $method;
-            $strings->methodname = get_string('pluginname', 'enrol_' . $method);
-            $strings->targetname = $targetshortname;
-            $strings->parentname = $parentid;
-            $strings->groupname = $groupname;
+            $strings['linenum'] = $line;
+            $strings['op'] = $op;
+            $strings['method'] = $method;
+            $strings['methodname'] = get_string('pluginname', 'enrol_' . $method);
+            $strings['shortname'] = $targetshortname;
+            $strings['parentname'] = $parentid;
+            $strings['groupname'] = $groupname;
 
             if ($op == 'add') {
-                $strings->oplabel = get_string('add');
+                $strings['oplabel'] = get_string('add');
             } else if ($op == 'del' || $op == 'delete') {
-                $strings->oplabel = get_string('delete');
+                $strings['oplabel'] = get_string('delete');
                 $op = 'del';
             } else if ($op == 'upd' || $op == 'update' || $op == 'mod' || $op == 'modify') {
-                $strings->oplabel = get_string('update');
+                $strings['oplabel'] = get_string('update');
                 $op = 'upd';
             }
 
@@ -206,51 +164,67 @@ class tool_uploadenrolmentmethods_processor {
 
             // Check we've got a valid operation.
             if (!in_array($op, array('add', 'del', 'upd'))) {
-                $report[] = get_string('invalidop', 'tool_uploadenrolmentmethods', $strings);
+                $report = get_string('invalidop', 'tool_uploadenrolmentmethods', $strings);
+                $tracker->output($this->linenb, 'false', $strings, $report);
+                $trace->output("Error on line $this->linenb: " . $report);
                 continue;
             }
             // Check we've got a valid method.
             if (!in_array($method, array('meta', 'cohort'))) {
-                $strings->method = $method;
-                $report[] = get_string('invalidmethod', 'tool_uploadenrolmentmethods', $strings);
+                $report = get_string('invalidmethod', 'tool_uploadenrolmentmethods', $strings);
+                $tracker->output($this->linenb, 'false', $strings, $report);
+                $trace->output("Error on line $this->linenb: " . $report);
                 continue;
             }
             // Check the requested enrolment method is enabled.
             if ($method == 'meta' && !enrol_is_enabled('meta')) {
-                $report[] = get_string('methoddisabled', 'tool_uploadenrolmentmethods', $strings);
+                $report = get_string('methoddisabled', 'tool_uploadenrolmentmethods', $strings);
+                $tracker->output($this->linenb, 'false', $strings, $report);
                 continue;
             } else if ($method == 'cohort' && !enrol_is_enabled('cohort')) {
                 // Check the cohort sync enrolment method is enabled.
-                $report[] = get_string('methoddisabled', 'tool_uploadenrolmentmethods', $strings);
+                $report = get_string('methoddisabled', 'tool_uploadenrolmentmethods', $strings);
+                $tracker->output($this->linenb, 'false', $strings, $report);
+                $trace->output("Error on line $this->linenb: " . $report);
                 continue;
             }
 
             // Check the target course we're assigning the method to exists.
             if (!$target = $DB->get_record('course', array('shortname' => $targetshortname))) {
-                $report[] = get_string('targetnotfound', 'tool_uploadenrolmentmethods', $strings);
+                $message = new stdClass();
+                $message->targetname = $targetshortname;
+                $report = get_string('targetnotfound', 'tool_uploadenrolmentmethods', $message);
+                $tracker->output($this->linenb, 'false', $strings, $report);
+                $trace->output("Error on line $this->linenb: " . $report);
                 continue;
             }
             // Check the parent metacourse we're assigning exists.
             if ($method == 'meta' && !($parent = $DB->get_record('course', array('shortname' => $parentid)))) {
-                $report[] = get_string('parentnotfound', 'tool_uploadenrolmentmethods', $strings);
+                $report = get_string('parentnotfound', 'tool_uploadenrolmentmethods', $strings);
+                $tracker->output($this->linenb, 'false', $strings, $report);
+                $trace->output("Error on line $this->linenb: " . $report);
                 continue;
             } else if ($method == 'cohort' && (!$parent = $DB->get_record('cohort', array('idnumber' => $parentid)))) {
                 // Check the cohort we're syncing exists.
-                $report[] = get_string('cohortnotfound', 'tool_uploadenrolmentmethods', $strings);
+                $report = get_string('cohortnotfound', 'tool_uploadenrolmentmethods', $strings);
+                $tracker->output($this->linenb, 'false', $strings, $report);
+                $trace->output("Error on line $this->linenb: " . $report);
                 continue;
             }
 
             // Check we have a valid role.
             if (!array_key_exists($rolename, $rolecache)) {
-                $strings->unknownrole = get_string('unknownrole', 'error', s($rolename));
-                $report[] = get_string('unknownrole', 'tool_uploadenrolmentmethods', $strings);
+                $strings['role'] = get_string('unknownrole', 'error', s($rolename));
+                $report = get_string('unknownrole', 'tool_uploadenrolmentmethods', $strings);
+                $tracker->output($this->linenb, 'false', $strings, $report);
+                $trace->output("Error on line $this->linenb: " . $report);
                 continue;
             } else {
                 $roleid = $rolecache[$rolename]->id;
             }
 
-            $strings->targetid = $target->id;
-            $strings->parentid = $parent->id;
+            $strings['targetid'] = $target->id;
+            $strings['parentid'] = $parent->id;
 
             $enrol = enrol_get_plugin($method);
 
@@ -264,25 +238,25 @@ class tool_uploadenrolmentmethods_processor {
                 // Skip the line if they're not.
                 if ($instance = $DB->get_record('enrol', $instanceparams)) {
                     $enrol->delete_instance($instance);
-                    $report[] = get_string('reldeleted', 'tool_uploadenrolmentmethods', $strings);
+                    $report = get_string('reldeleted', 'tool_uploadenrolmentmethods', $strings);
                 } else {
-                    $report[] = get_string('reldoesntexist', 'tool_uploadenrolmentmethods', $strings);
+                    $report = get_string('reldoesntexist', 'tool_uploadenrolmentmethods', $strings);
                 }
             } else if ($op == 'upd') {
                 // Updating, so check the parent is already linked to the target, and change the status.
                 // Skip the line if they're not.
                 if ($instance = $DB->get_record('enrol', $instanceparams)) {
                     // Found a valid  instance, so  enable or disable it.
-                    $strings->instancename = $enrol->get_instance_name($instance);
+                    $strings['instancename'] = $enrol->get_instance_name($instance);
                     if ($disabledstatus == 1) {
-                        $strings->status = get_string('statusdisabled', 'enrol_manual');
+                        $strings['status'] = get_string('statusdisabled', 'enrol_manual');
                         $enrol->update_status($instance, ENROL_INSTANCE_DISABLED);
                     } else {
                         $enrol->update_status($instance, ENROL_INSTANCE_ENABLED);
                     }
-                    $report[] = get_string('relupdated', 'tool_uploadenrolmentmethods', $strings);
+                    $report = get_string('relupdated', 'tool_uploadenrolmentmethods', $strings);
                 } else {
-                    $report[] = get_string('reldoesntexist', 'tool_uploadenrolmentmethods', $strings);
+                    $report = get_string('reldoesntexist', 'tool_uploadenrolmentmethods', $strings);
                 }
             } else if ($op == 'add') {
                 // Adding, so check that the parent is not already linked to the target, and add them.
@@ -304,10 +278,10 @@ class tool_uploadenrolmentmethods_processor {
                 }
 
                 if ($method == 'meta' && ($instance = $DB->get_record('enrol', $instancemetacheck))) {
-                    $report[] = get_string('targetisparent', 'tool_uploadenrolmentmethods', $strings);
+                    $report = get_string('targetisparent', 'tool_uploadenrolmentmethods', $strings);
                 } else if ($instance = $DB->get_record('enrol', $instanceparams)) {
                     // This is a duplicate, skip it.
-                    $report[] = get_string('relalreadyexists', 'tool_uploadenrolmentmethods', $strings);
+                    $report = get_string('relalreadyexists', 'tool_uploadenrolmentmethods', $strings);
                 } else if ($instanceid = $enrol->add_instance($target, $instancenewparams)) {
                     // Successfully added a valid new instance, so now instantiate it.
 
@@ -315,28 +289,32 @@ class tool_uploadenrolmentmethods_processor {
                     if ($method == 'meta') {
                         enrol_meta_sync($instancenewparams['customint1']);
                     } else if ($method == 'cohort') {
-                        $trace = new null_progress_trace();
+                        $cohorttrace = new null_progress_trace();
                         enrol_cohort_sync($trace, $target->id);
-                        $trace->finished();
+                        $cohorttrace->finished();
                     }
 
                     // Is it initially disabled?
                     if ($disabledstatus == 1) {
                         $instance = $DB->get_record('enrol', array('id' => $instanceid));
                         $enrol->update_status($instance, ENROL_INSTANCE_DISABLED);
-                        $strings->status = get_string('statusdisabled', 'enrol_manual');
+                        $strings['status'] = get_string('statusdisabled', 'enrol_manual');
                     }
 
-                    $strings->instancename = $enrol->get_instance_name($instance);
-                    $report[] = get_string('reladded', 'tool_uploadenrolmentmethods', $strings);
+                    $strings['instancename'] = $enrol->get_instance_name($instance);
+                    $report = get_string('reladded', 'tool_uploadenrolmentmethods', $strings);
                 } else {
                     // Instance not added for some reason, so report an error and go to the next line.
-                    $report[] = get_string('reladderror', 'tool_uploadenrolmentmethods', $strings);
+                    $report = get_string('reladderror', 'tool_uploadenrolmentmethods', $strings);
                 }
             }
-        }
-        fclose($file);
-        return implode("<br/>", $report);
+
+            $tracker->output($this->linenb, 'true', $strings, $report);
+            $trace->output("Finished line $this->linenb: status " . $strings['status'] . "; role: " . $strings['rolelabel']);
+        } // End of while loop.
+
+        $tracker->finish();
+        $tracker->results($total, $created, $updated, $deleted, $errors);
     }
 
     /**
@@ -357,6 +335,31 @@ class tool_uploadenrolmentmethods_processor {
             $data[$key] = $value;
         }
         return $data;
+    }
+
+    /**
+     * Reset the current process.
+     *
+     * @return void.
+     */
+    public function reset() {
+        $this->processstarted = false;
+        $this->linenb = 0;
+        $this->cir->init();
+        $this->errors = array();
+    }
+
+    /**
+     * Validation.
+     *
+     * @return void
+     */
+    protected function validate() {
+        if (empty($this->columns)) {
+            throw new moodle_exception('cannotreadtmpfile', 'error');
+        } else if (count($this->columns) < 2) {
+            throw new moodle_exception('csvfewcolumns', 'error');
+        }
     }
 }
 

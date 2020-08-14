@@ -53,7 +53,7 @@ class tool_uploadenrolmentmethods_tracker {
     /**
      * @var array columns to display.
      */
-    protected $columns = array('line', 'result', 'id', 'shortname', 'metacourse', 'idnumber', 'status');
+    protected $columns = array('line', 'op', 'methodname', 'shortname', 'id', 'metacohort', 'role', 'disabled', 'group', 'status');
 
     /**
      * @var int row number.
@@ -152,10 +152,12 @@ class tool_uploadenrolmentmethods_tracker {
             $message = array(
                 $line,
                 $outcome ? 'OK' : 'NOK',
-                isset($data['id']) ? $data['id'] : '',
+                isset($data['line']) ? $data['line'] : '',
+                isset($data['op']) ? $data['op'] : '',
+                isset($data['op']) ? $data['methodname'] : '',
                 isset($data['shortname']) ? $data['shortname'] : '',
-                isset($data['metacourse']) ? $data['metacourse'] : '',
-                isset($data['idnumber']) ? $data['idnumber'] : ''
+                " (" . isset($data['id']) ? $data['id'] : '' . ")",
+                isset($data['metacohort']) ? $data['metacohort'] : '',
             );
             $this->buffer->output(implode("\t", $message));
             if (!empty($status)) {
@@ -177,10 +179,14 @@ class tool_uploadenrolmentmethods_tracker {
             echo html_writer::start_tag('tr', array('class' => 'r' . $this->rownb % 2));
             echo html_writer::tag('td', $line, array('class' => 'c' . $ci++));
             echo html_writer::tag('td', $outcome, array('class' => 'c' . $ci++));
-            echo html_writer::tag('td', isset($data['id']) ? $data['id'] : '', array('class' => 'c' . $ci++));
+            echo html_writer::tag('td', isset($data['line']) ? $data['line'] : '', array('class' => 'c' . $ci++));
+            echo html_writer::tag('td', isset($data['op']) ? $data['op'] : '', array('class' => 'c' . $ci++));
+            // echo html_writer::tag('td', isset($data['method']) ? $data['method'] : '', array('class' => 'c' . $ci++));
             echo html_writer::tag('td', isset($data['shortname']) ? $data['shortname'] : '', array('class' => 'c' . $ci++));
+            echo html_writer::tag('td', isset($data['id']) ? $data['id'] : '', array('class' => 'c' . $ci++));
             echo html_writer::tag('td', isset($data['metacourse']) ? $data['metacourse'] : '', array('class' => 'c' . $ci++));
-            echo html_writer::tag('td', isset($data['idnumber']) ? $data['idnumber'] : '', array('class' => 'c' . $ci++));
+            echo html_writer::tag('td', isset($data['role']) ? $data['role'] : '', array('class' => 'c' . $ci++));
+            echo html_writer::tag('td', isset($data['group']) ? $data['group'] : '', array('class' => 'c' . $ci++));
             echo html_writer::tag('td', $status, array('class' => 'c' . $ci++));
             echo html_writer::end_tag('tr');
         }
@@ -208,15 +214,21 @@ class tool_uploadenrolmentmethods_tracker {
             echo html_writer::start_tag('tr', array('class' => 'heading r' . $this->rownb));
             echo html_writer::tag('th', get_string('csvline', 'tool_uploadcourse'),
                 array('class' => 'c' . $ci++, 'scope' => 'col'));
-            echo html_writer::tag('th', get_string('result', 'tool_uploadcourse'),
+            echo html_writer::tag('th', get_string('operation', 'tool_uploadenrolmentmethods'),
                 array('class' => 'c' . $ci++, 'scope' => 'col'));
-            echo html_writer::tag('th', get_string('id', 'tool_uploadenrolmentmethods'),
+            echo html_writer::tag('th', get_string('methodname', 'tool_uploadenrolmentmethods'),
                 array('class' => 'c' . $ci++, 'scope' => 'col'));
             echo html_writer::tag('th', get_string('shortname'),
                 array('class' => 'c' . $ci++, 'scope' => 'col'));
-            echo html_writer::tag('th', get_string('cohort') . '/' . get_string('metacourse'),
+            echo html_writer::tag('th', get_string('id', 'tool_uploadenrolmentmethods'),
                 array('class' => 'c' . $ci++, 'scope' => 'col'));
-            echo html_writer::tag('th', get_string('methodname', 'tool_uploadenrolmentmethods'),
+            echo html_writer::tag('th', get_string('metacohort') . '/' . get_string('metacourse'),
+                array('class' => 'c' . $ci++, 'scope' => 'col'));
+            echo html_writer::tag('th', get_string('statusdisabled', 'enrol_manual'),
+                array('class' => 'c' . $ci++, 'scope' => 'col'));
+            echo html_writer::tag('th', get_string('group'),
+                array('class' => 'c' . $ci++, 'scope' => 'col'));
+            echo html_writer::tag('th', get_string('role'),
                 array('class' => 'c' . $ci++, 'scope' => 'col'));
             echo html_writer::tag('th', get_string('status'), array('class' => 'c' . $ci++, 'scope' => 'col'));
             echo html_writer::tag('th', get_string('skipped', 'tool_uploadenrolmentmethods'),

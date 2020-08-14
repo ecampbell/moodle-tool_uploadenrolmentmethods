@@ -71,7 +71,7 @@ if ($data = $form->get_data()) {
     $cir = new csv_import_reader($importid, $pluginname);
     $content = $form->get_file_content('csvfile');
     // Check if the first line contains an explicit heading row, with 'op' as the first field column.
-    if (substring($content, 0, 2) == 'op') {
+    if (substr($content, 0, 2) == 'op') {
         // Contains a heading row, new style CSV file.
         $readcount = $cir->load_csv_content($content, $data->encoding, $data->delimiter_name);
         unset($content);
@@ -83,9 +83,9 @@ if ($data = $form->get_data()) {
 
         // We've got a live file with some entries, so process it.
         $processor = new tool_uploadenrolmentmethods_processor($cir);
-        echo $OUTPUT->heading(get_string('uploadenrolmentmethodsresult', 'tool_uploadenrolmentmethods'));
+        echo $OUTPUT->heading(get_string('results', 'tool_uploadenrolmentmethods'));
         $processor->execute(new tool_uploadenrolmentmethods_tracker(tool_uploadenrolmentmethods_tracker::NO_OUTPUT));
-        echo $OUTPUT->continue_button($returnurl);
+        // echo $OUTPUT->continue_button($url);
     } else {
         // No heading row, old style CSV file.
         $handler = new tool_uploadenrolmentmethods_handler($data->csvfile, $cir);

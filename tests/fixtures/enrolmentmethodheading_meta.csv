@@ -1,0 +1,3 @@
+operation,method,shortname,metacohort,disabled,group,role
+add,meta,C102,C101,0,Meta Group 1,student
+upd,meta,C102,C101,1,,
