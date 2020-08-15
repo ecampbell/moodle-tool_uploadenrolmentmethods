@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['cohortnotfound']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Cohort "{$a->parentname}" not found. {$a->skipped}.';
-$string['csvcomment']            = '{$a->line} {$a->linenum} [Comment]: {$a->skipped}.';
+$string['cohortnotfound']        = 'Cohort not found.';
+$string['csvcomment']            = '{$a->line} {$a->linenum} [Comment]:';
 $string['csvfile']               = '';
 $string['csvfile_help']          = 'The format of the CSV file must be as follows:
 
@@ -41,25 +41,31 @@ $string['csvfile_help']          = 'The format of the CSV file must be as follow
   The group will be created if it doesn\'t already exist.
 * The role field must be a valid role name such as editingteacher, student, etc.';
 $string['heading']               = 'Upload course enrolment methods from a CSV file';
-$string['invalidmethod']         = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->method}]: Invalid method.';
-$string['invalidop']             = '{$a->line} {$a->linenum} [{$a->op} {$a->method}]: Invalid operation.';
+$string['invalidmethod']         = 'Invalid method.';
+$string['invalidop']             = 'Invalid operation.';
+$string['metacohort']            = 'Cohort or meta course';
 $string['method']                = 'Method';
-$string['methoddisabled']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: {$a->disabled}. {$a->skipped}.';
-$string['methoddisabledwarning'] = 'Enrolment method "{$a->methodname}": {$a->disabled}.';
+$string['methoddisabledwarning'] = 'Enrolment method "{$a}" disabled.';
+$string['methodstotal']          = 'Total: {$a}';
+$string['methodscreated']        = 'Created: {$a}';
+$string['methodsupdated']        = 'Updated: {$a}';
+$string['methodsdeleted']        = 'Deleted: {$a}';
+$string['methodserrors']         = 'Errors: {$a}';
 $string['operation']             = 'Operation';
-$string['parentnotfound']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Meta course "{$a->parentname}" not found. {$a->skipped}.';
+$string['outcome']               = 'Outcome';
+$string['parentnotfound']        = 'Meta course not found.';
 $string['pluginname']            = 'Upload enrolment methods';
 $string['pluginname_help']       = 'Upload enrolment methods from a CSV file to set enrolment methods for a range of courses in a single operation.';
 $string['privacy:metadata']      = 'The Upload enrolment methods administration tool does not store personal data.';
-$string['reladded']              = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Course "{$a->targetname}" ({$a->targetid}) linked to "{$a->parentname}" ({$a->parentid}) with name "{$a->instancename}". {$a->status}.';
-$string['reladderror']           = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Error linking "{$a->targetname}" ({$a->targetid}) to "{$a->parentname}" ({$a->parentid}). {$a->skipped}.';
-$string['relalreadyexists']      = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: "{$a->targetname}" ({$a->targetid}) already linked to "{$a->parentname}" ({$a->parentid}). {$a->skipped}.';
-$string['reldeleted']            = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Deleted "{$a->instancename}" method from "{$a->targetname}" ({$a->targetid}).';
-$string['reldoesntexist']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: "{$a->targetname}" ({$a->targetid}) not linked to "{$a->parentname}" ({$a->parentid}), so cannot be removed. {$a->skipped}.';
-$string['relupdated']            = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Updated "{$a->instancename}" method in "{$a->targetname}" ({$a->targetid}). {$a->status}.';
+$string['reladded']              = 'Medhod added.';
+$string['reladderror']           = 'Error linking method to course.';
+$string['relalreadyexists']      = 'Method already linked to course.';
+$string['reldeleted']            = 'Deleted method.';
+$string['reldoesntexist']        = 'Method doesn\'t exist.';
+$string['relupdated']            = 'Updated method.';
+$string['result']                = 'Result';
 $string['results']               = 'Upload Enrolment method results';
-$string['targetisparent']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: "{$a->targetname}" ({$a->targetid}) is a parent of "{$a->parentname}" ({$a->parentid}), so cannot be added as its target. {$a->skipped}.';
-$string['targetnotfound']        = '{$a->line} {$a->linenum} [{$a->oplabel} {$a->methodname}]: Unknown course "{$a->targetname}". {$a->skipped}.';
-$string['toofewcols']            = '{$a->line} {$a->linenum}: Too few columns, expecting 6/7. {$a->skipped}.';
-$string['toomanycols']           = '{$a->line} {$a->linenum}: Too many columns, expecting 6/7. {$a->skipped}.';
-$string['unknownrole']           = '{$a->line} {$a->linenum}: [{$a->oplabel} {$a->methodname}]: {$a->unknownrole}. {$a->skipped}.';
+$string['targetisparent']        = 'Method is a parent of the course, so cannot be added as its target.';
+$string['targetnotfound']        = 'Unknown course.';
+$string['toofewcols']            = 'Too few columns, expecting 6/7.';
+$string['toomanycols']           = 'Too many columns, expecting 6/7.';

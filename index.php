@@ -84,7 +84,7 @@ if ($data = $form->get_data()) {
         // We've got a live file with some entries, so process it.
         $processor = new tool_uploadenrolmentmethods_processor($cir);
         echo $OUTPUT->heading(get_string('results', 'tool_uploadenrolmentmethods'));
-        $processor->execute(new tool_uploadenrolmentmethods_tracker(tool_uploadenrolmentmethods_tracker::NO_OUTPUT));
+        $processor->execute(new tool_uploadenrolmentmethods_tracker(tool_uploadenrolmentmethods_tracker::OUTPUT_HTML));
         // echo $OUTPUT->continue_button($url);
     } else {
         // No heading row, old style CSV file.
@@ -98,18 +98,15 @@ if ($data = $form->get_data()) {
     // Display the form.
     echo $OUTPUT->heading($heading);
 
-    $strings = new stdClass;
-    $strings->disabled = get_string('functiondisabled');
-
     $displaymanageenrollink = 0;
     if (!enrol_is_enabled('meta')) {
-        $strings->methodname = get_string('pluginname', 'enrol_meta');
-        echo html_writer::tag('div', get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods', $strings));
+        echo html_writer::tag('div', get_string('methoddisabled', 'tool_uploadenrolmentmethods',
+            get_string('pluginname', 'enrol_meta')));
         $displaymanageenrollink = 1;
     }
     if (!enrol_is_enabled('cohort')) {
-        $strings->methodname = get_string('pluginname', 'enrol_cohort');
-        echo html_writer::tag('div', get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods', $strings));
+        echo html_writer::tag('div', get_string('methoddisabled', 'tool_uploadenrolmentmethods',
+            get_string('pluginname', 'enrol_cohort')));
         $displaymanageenrollink = 1;
     }
     if ($displaymanageenrollink) {
