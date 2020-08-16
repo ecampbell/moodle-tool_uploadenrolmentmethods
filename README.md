@@ -46,11 +46,10 @@ to upload a CSV file containing lines of the form:
 
 The format of the CSV file is as follows:
 
-* Lines beginning with a # or ; character are comments, and skipped.
 * Each line of the file contains one record.
-* Each record is a series of data in a fixed order separated by commas.
-* The fields are: operation, enrolment method, target course shortname, parent course shortname or cohort idnumber, disabled status, group name[, role].
-* All fields are required except role, which can be omitted for backwards compatibility.
+* Each record is a series of data in any order separated by commas or other standard delimiters.
+* The fields are: operation, enrolment method, target course shortname, parent course shortname or cohort idnumber, disabled status[, group name, role].
+* All fields are required except group and role.
 * The operations are add, del(ete) and upd(ate).
 * The supported enrolment methods are meta and cohort.
 * The disabled status values are 1 (disabled) or 0 (enabled).

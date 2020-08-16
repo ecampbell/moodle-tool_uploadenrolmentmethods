@@ -36,6 +36,9 @@ global $CFG, $OUTPUT, $USER, $SITE, $PAGE;
 // Ensure only administrators have access.
 $homeurl = new moodle_url('/');
 require_login();
+if (!is_siteadmin()) {
+    redirect($homeurl, get_string('adminonly', 'badges', 5);
+}
 
 // URL Parameters.
 // There are none.
