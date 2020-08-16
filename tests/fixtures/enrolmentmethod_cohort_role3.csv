@@ -1,0 +1,5 @@
+operation;method;shortname;metacohort;disabled
+add;cohort;C101;cohort1;0
+upd;cohort;C101;cohort1;1
+del;cohort;C101;cohort2;1
+add;cohort;C101;cohort2;0

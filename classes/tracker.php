@@ -56,6 +56,11 @@ class tool_uploadenrolmentmethods_tracker {
     protected $columns = array();
 
     /**
+     * @var bool display visual outcome column.
+     */
+    protected $outcomecol = false;
+
+    /**
      * @var int row number.
      */
     protected $rownb = 0;
@@ -75,45 +80,49 @@ class tool_uploadenrolmentmethods_tracker {
      *
      * @param int $outputmode desired output mode.
      */
-    public function __construct($outputmode = self::NO_OUTPUT) {
+    public function __construct($outputmode = self::NO_OUTPUT, bool $outcomecol = false) {
         $this->outputmode = $outputmode;
         if ($this->outputmode == self::OUTPUT_PLAIN) {
             $this->buffer = new progress_trace_buffer(new text_progress_trace());
         }
+        $this->outputcol = $outputcol;
     }
 
     /**
      * Start the output.
      *
      * @param array $reportheadings list of headings for output report, with names and labels
+     * @param bool $outcomecol Include an outcome column to visually indicate success or failure
      * @return void
      */
-    public function start(array $reportheadings) {
+    public function start(array $reportheadings, bool $outcomecol = false) {
 
         if ($this->outputmode == self::NO_OUTPUT) {
             return;
         }
 
+        $this->outcomecol = $outcomecol;
+
         // Set the columns.
         foreach ($reportheadings as $hkey => $label) {
             $this->columns[$hkey] = $label;
         }
+
         if ($this->outputmode == self::OUTPUT_PLAIN) {
-            $this->buffer->output(implode("\t", $this->columns));
+            foreach ($reportheadings as $hkey => $label) {
+                $this->buffer->output($label);
+            }
         } else if ($this->outputmode == self::OUTPUT_HTML) {
             // Print HTML table.
             echo html_writer::start_tag('table', array('class' => 'generaltable boxaligncenter flexible-wrap'));
-
             echo html_writer::start_tag('thead');
-                echo html_writer::start_tag('tr', array('class' => 'heading r' . $this->rownb));
-
-            // Print the headings in array order, and keep track of the column order for printing rows.
+            echo html_writer::start_tag('tr', array('class' => 'heading r' . $this->rownb));
+            if ($this->outcomecol) {
+                echo html_writer::tag('th', '', array('class' => 'c' . $ci++, 'scope' => 'col'));
+            }
+            // Print the headings in array order, and keep track of the columns and order for printing body rows.
             $ci = 0;
             foreach ($reportheadings as $hkey => $label) {
-                // Don't put the line number and outcome into the columns array to simplify outputting the message row.
-                if ($hkey !== 'line' && $hkey !== 'outcome') {
-                    $this->columns[$hkey] = $label;
-                }
                 echo html_writer::tag('th', $label,
                     array('class' => 'c' . $ci++, 'scope' => 'col'));
             }
@@ -126,33 +135,26 @@ class tool_uploadenrolmentmethods_tracker {
     /**
      * Output one more line.
      *
-     * @param int $line line number.
-     * @param bool $outcome success or not?
      * @param array $rowdata data for each column of report
-     * @param array $message array of explanation text
+     * @param bool $outcome success or not?
      * @return void
      */
-    public function output($line, $outcome, $rowdata, $message) {
+    public function output(array $rowdata, bool $outcome = false) {
         global $OUTPUT;
 
         if ($this->outputmode == self::NO_OUTPUT) {
             return;
         }
 
-        $tracer = new html_progress_trace();
-        $tracer->output("<pre>" . var_dump($rowdata, true) . "</pre>");
-
         if ($this->outputmode == self::OUTPUT_PLAIN) {
-            $message = array(
-                $line,
-                $outcome ? 'OK' : 'NOK',
-                isset($rowdata['line']) ? $rowdata['line'] : '',
-                isset($rowdata['op']) ? $rowdata['op'] : '',
-                isset($rowdata['op']) ? $rowdata['methodname'] : '',
-                isset($rowdata['shortname']) ? $rowdata['shortname'] : '',
-                " (" . isset($rowdata['id']) ? $rowdata['id'] : '' . ")",
-                isset($rowdata['metacohort']) ? $rowdata['metacohort'] : '',
-            );
+            if ($this->outcomecol) {
+                $message[] = $outcome ? 'OK' : 'NOK';
+            }
+
+            // Print a column for each heading.
+            foreach ($this->columns as $key => $value) {
+                $message[] = isset($rowdata[$key]) ? $rowdata[$key] : '';
+            }
             $this->buffer->output(implode("\t", $message));
             if (!empty($message)) {
                 foreach ($message as $st) {
@@ -161,28 +163,28 @@ class tool_uploadenrolmentmethods_tracker {
             }
         } else if ($this->outputmode == self::OUTPUT_HTML) {
             $ci = 0;
-            $this->rownb++;
-            // Handle a possible multi-line message with details.
-            if (is_array($message)) {
-                $message = implode(html_writer::empty_tag('br'), $message);
-            }
-            // Print a nice icon (green tickbox or red x) for the outcome.
-            if ($outcome) {
-                $outcome = $OUTPUT->pix_icon('i/valid', '');
-            } else {
-                $outcome = $OUTPUT->pix_icon('i/invalid', '');
+            $this->rownb++; // Use to mark odd and even rows for visual striping.
+
+            // Print a row of output.
+            echo html_writer::start_tag('tr', array('class' => 'r' . $this->rownb % 2));
+            // Print a visual success indicator column (green tickbox or red x) for the outcome.
+            if ($this->outcomecol) {
+                if ($outcome) {
+                    $outcome = $OUTPUT->pix_icon('i/valid', '');
+                } else {
+                    $outcome = $OUTPUT->pix_icon('i/invalid', '');
+                }
+                echo html_writer::tag('td', $outcome, array('class' => 'c' . $ci++));
             }
 
-            echo html_writer::start_tag('tr', array('class' => 'r' . $this->rownb % 2));
-            echo html_writer::tag('td', $line, array('class' => 'c' . $ci++));
-            echo html_writer::tag('td', $outcome, array('class' => 'c' . $ci++));
+            // Print a column for each heading.
             foreach ($this->columns as $key => $value) {
                 if (isset($rowdata[$key])) {
-                    $tracer->output("column key: $key; rowdata: " . isset($rowdata[$key]) ? $rowdata[$key] : '');
                     echo html_writer::tag('td', $rowdata[$key], array('class' => 'c' . $ci++));
+                } else {
+                    echo html_writer::tag('td', '', array('class' => 'c' . $ci++));
                 }
             }
-            echo html_writer::tag('td', $message, array('class' => 'c' . $ci++));
             echo html_writer::end_tag('tr');
         }
     }
@@ -204,23 +206,23 @@ class tool_uploadenrolmentmethods_tracker {
     }
 
     /**
-     * Output the results.
+     * Output a summary of the results.
      *
-     * @param array $message Summary of completed operations.
+     * @param array $summary Summary of completed operations.
      * @return void
      */
-    public function results(array $message) {
+    public function results(array $summary) {
         if ($this->outputmode == self::NO_OUTPUT) {
             return;
         }
 
         if ($this->outputmode == self::OUTPUT_PLAIN) {
-            foreach ($message as $msg) {
+            foreach ($summary as $msg) {
                 $this->buffer->output($total);
             }
         } else if ($this->outputmode == self::OUTPUT_HTML) {
             $buffer = new progress_trace_buffer(new html_list_progress_trace());
-            foreach ($message as $msg) {
+            foreach ($summary as $msg) {
                 $buffer->output($msg);
             }
             $buffer->finished();

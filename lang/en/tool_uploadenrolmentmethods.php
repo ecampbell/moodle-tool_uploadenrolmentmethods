@@ -25,15 +25,13 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['cohortnotfound']        = 'Cohort not found.';
-$string['csvcomment']            = '{$a->line} {$a->linenum} [Comment]:';
 $string['csvfile']               = '';
-$string['csvfile_help']          = 'The format of the CSV file must be as follows:
+$string['csvfile_help']          = 'The format of the CSV file is as follows:
 
-* Lines beginning with a # or ; character are comments, and skipped.
 * Each line of the file contains one record.
-* Each record is a series of data in a fixed order separated by commas.
-* The fields are: operation, enrolment method, target course shortname, parent course shortname or cohort idnumber, disabled status, group name[, role].
-* All fields are required except role, which can be omitted for backwards compatibility.
+* Each record is a series of data in any order separated by commas or other standard delimiters.
+* The fields are: operation, enrolment method, target course shortname, parent course shortname or cohort idnumber, disabled status[, group name, role].
+* All fields are required except group and role.
 * The operations are add, del(ete) and upd(ate).
 * The supported enrolment methods are meta and cohort.
 * The disabled status values are 1 (disabled) or 0 (enabled).
@@ -43,29 +41,22 @@ $string['csvfile_help']          = 'The format of the CSV file must be as follow
 $string['heading']               = 'Upload course enrolment methods from a CSV file';
 $string['invalidmethod']         = 'Invalid method.';
 $string['invalidop']             = 'Invalid operation.';
-$string['metacohort']            = 'Cohort or meta course';
 $string['method']                = 'Method';
 $string['methoddisabledwarning'] = 'Enrolment method "{$a}" disabled.';
-$string['methodstotal']          = 'Total: {$a}';
 $string['methodscreated']        = 'Created: {$a}';
-$string['methodsupdated']        = 'Updated: {$a}';
 $string['methodsdeleted']        = 'Deleted: {$a}';
 $string['methodserrors']         = 'Errors: {$a}';
+$string['methodstotal']          = 'Total: {$a}';
+$string['methodsupdated']        = 'Updated: {$a}';
 $string['operation']             = 'Operation';
-$string['outcome']               = 'Outcome';
-$string['parentnotfound']        = 'Meta course not found.';
+$string['parentnotfound']        = 'Meta link course not found.';
 $string['pluginname']            = 'Upload enrolment methods';
 $string['pluginname_help']       = 'Upload enrolment methods from a CSV file to set enrolment methods for a range of courses in a single operation.';
 $string['privacy:metadata']      = 'The Upload enrolment methods administration tool does not store personal data.';
-$string['reladded']              = 'Medhod added.';
 $string['reladderror']           = 'Error linking method to course.';
 $string['relalreadyexists']      = 'Method already linked to course.';
-$string['reldeleted']            = 'Deleted method.';
 $string['reldoesntexist']        = 'Method doesn\'t exist.';
-$string['relupdated']            = 'Updated method.';
 $string['result']                = 'Result';
-$string['results']               = 'Upload Enrolment method results';
+$string['results']               = 'Upload enrolment methods results';
 $string['targetisparent']        = 'Method is a parent of the course, so cannot be added as its target.';
 $string['targetnotfound']        = 'Unknown course.';
-$string['toofewcols']            = 'Too few columns, expecting 6/7.';
-$string['toomanycols']           = 'Too many columns, expecting 6/7.';

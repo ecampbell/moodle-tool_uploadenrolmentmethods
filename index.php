@@ -70,28 +70,18 @@ if ($data = $form->get_data()) {
     $importid = csv_import_reader::get_new_iid($pluginname);
     $cir = new csv_import_reader($importid, $pluginname);
     $content = $form->get_file_content('csvfile');
-    // Check if the first line contains an explicit heading row, with 'op' as the first field column.
-    if (substr($content, 0, 2) == 'op') {
-        // Contains a heading row, new style CSV file.
-        $readcount = $cir->load_csv_content($content, $data->encoding, $data->delimiter_name);
-        unset($content);
-        if ($readcount === false) {
-            print_error('csvfileerror', 'tool_uploadcourse', $url, $cir->get_error());
-        } else if ($readcount == 0) {
-            print_error('csvemptyfile', 'error', $url, $cir->get_error());
-        }
-
-        // We've got a live file with some entries, so process it.
-        $processor = new tool_uploadenrolmentmethods_processor($cir);
-        echo $OUTPUT->heading(get_string('results', 'tool_uploadenrolmentmethods'));
-        $processor->execute(new tool_uploadenrolmentmethods_tracker(tool_uploadenrolmentmethods_tracker::OUTPUT_HTML));
-        // echo $OUTPUT->continue_button($url);
-    } else {
-        // No heading row, old style CSV file.
-        $handler = new tool_uploadenrolmentmethods_handler($data->csvfile, $cir);
-        $report = $handler->process();
-        echo $report;
+    $readcount = $cir->load_csv_content($content, $data->encoding, $data->delimiter_name);
+    unset($content);
+    if ($readcount === false) {
+        print_error('csvfileerror', 'tool_uploadcourse', $url, $cir->get_error());
+    } else if ($readcount == 0) {
+        print_error('csvemptyfile', 'error', $url, $cir->get_error());
     }
+
+    // We've got a live file with some entries, so process it.
+    $processor = new tool_uploadenrolmentmethods_processor($cir);
+    echo $OUTPUT->heading(get_string('results', 'tool_uploadenrolmentmethods'));
+    $processor->execute(new tool_uploadenrolmentmethods_tracker(tool_uploadenrolmentmethods_tracker::OUTPUT_HTML));
 
     echo $OUTPUT->continue_button($url);
 } else {
