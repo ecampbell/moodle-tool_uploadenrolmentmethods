@@ -37,7 +37,7 @@ global $CFG, $OUTPUT, $USER, $SITE, $PAGE;
 $homeurl = new moodle_url('/');
 require_login();
 if (!is_siteadmin()) {
-    redirect($homeurl, get_string('adminonly', 'badges', 5);
+    redirect($homeurl, get_string('adminonly', 'badges', 5));
 }
 
 // URL Parameters.
