@@ -93,12 +93,12 @@ if ($data = $form->get_data()) {
 
     $displaymanageenrollink = 0;
     if (!enrol_is_enabled('meta')) {
-        echo html_writer::tag('div', get_string('methoddisabled', 'tool_uploadenrolmentmethods',
+        echo html_writer::tag('div', get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods',
             get_string('pluginname', 'enrol_meta')));
         $displaymanageenrollink = 1;
     }
     if (!enrol_is_enabled('cohort')) {
-        echo html_writer::tag('div', get_string('methoddisabled', 'tool_uploadenrolmentmethods',
+        echo html_writer::tag('div', get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods',
             get_string('pluginname', 'enrol_cohort')));
         $displaymanageenrollink = 1;
     }
