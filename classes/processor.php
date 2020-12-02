@@ -176,13 +176,15 @@ class tool_uploadenrolmentmethods_processor {
             // Check the requested enrolment method is enabled.
             if ($method == 'meta' && !enrol_is_enabled('meta')) {
                 $errors++;
-                $messagerow['result'] = get_string('methoddisabled', 'tool_uploadenrolmentmethods');
+                $messagerow['result'] = get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods',
+                    get_string('pluginname', 'enrol_meta'));
                 $tracker->output($messagerow, false);
                 continue;
             } else if ($method == 'cohort' && !enrol_is_enabled('cohort')) {
                 // Check the cohort sync enrolment method is enabled.
                 $errors++;
-                $messagerow['result'] = get_string('methoddisabled', 'tool_uploadenrolmentmethods');
+                $messagerow['result'] = get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods',
+                    get_string('pluginname', 'enrol_cohort'));
                 $tracker->output($messagerow, false);
                 continue;
             }
@@ -212,7 +214,7 @@ class tool_uploadenrolmentmethods_processor {
             // Check we have a valid role.
             if (!array_key_exists($rolename, $rolecache)) {
                 $errors++;
-                $messagerow['result'] = get_string('unknownrole');
+                $messagerow['result'] = get_string('unknownrole', 'error', $rolename);
                 $tracker->output($messagerow, false);
                 continue;
             } else {

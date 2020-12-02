@@ -85,7 +85,7 @@ class tool_uploadenrolmentmethods_tracker {
         if ($this->outputmode == self::OUTPUT_PLAIN) {
             $this->buffer = new progress_trace_buffer(new text_progress_trace());
         }
-        $this->outputcol = $outputcol;
+        $this->outcomecol = $outcomecol;
     }
 
     /**
@@ -114,6 +114,7 @@ class tool_uploadenrolmentmethods_tracker {
             }
         } else if ($this->outputmode == self::OUTPUT_HTML) {
             // Print HTML table.
+            $ci = 0;
             echo html_writer::start_tag('table', array('class' => 'generaltable boxaligncenter flexible-wrap'));
             echo html_writer::start_tag('thead');
             echo html_writer::start_tag('tr', array('class' => 'heading r' . $this->rownb));

@@ -27,7 +27,7 @@ There are no special considerations required for updating the plugin.
 
 ### Uninstallation ###
 
-Uninstalling the plugin by going into the following:
+Uninstall the plugin by going to the "Manage plugins" page:
 
 __Administration &gt; Site administration &gt; Plugins &gt; Manage plugins &gt; Upload enrolment methods__
 
@@ -40,15 +40,16 @@ __Administration &gt; Site administration &gt; Plugins &gt; Manage plugins &gt; 
 There are no configurable settings for this plugin.
 
 Use the command __Administration &gt; Site administration &gt; Plugins &gt; Enrolments &gt; Upload enrolment methods__
-to upload a CSV file containing lines of the form:
+to upload a CSV file containing the following labelled columns in any order:
 
-    operation, enrolment method, target course shortname, meta course shortname or cohort idnumber, disabled status[, group name[,role]]
+    operation,method,shortname,metacohort,disabled,group,role
 
 The format of the CSV file is as follows:
 
+* Line 1 contains column headings.
 * Each line of the file contains one record.
 * Each record is a series of data in any order separated by commas or other standard delimiters.
-* The fields are: operation, enrolment method, target course shortname, parent course shortname or cohort idnumber, disabled status[, group name, role].
+* The fields are: operation, enrolment method, target course shortname, parent course shortname or cohort idnumber, disabled status[, group name[, role]].
 * All fields are required except group and role.
 * The operations are add, del(ete) and upd(ate).
 * The supported enrolment methods are meta and cohort.
