@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.3.2] - 2020-12-08
+### Added
+- Fix plugin version number format
+
 ## [1.3.1] - 2020-12-02
 ### Added
 - Fix broken error messages
