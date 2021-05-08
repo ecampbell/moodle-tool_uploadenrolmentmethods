@@ -229,7 +229,8 @@ class tool_uploadenrolmentmethods_processor {
             $instanceparams = array(
                 'courseid' => $target->id,
                 'customint1' => $parent->id,
-                'enrol' => $method
+                'enrol' => $method,
+                'roleid' => $roleid
             );
             if ($op == 'del') {
                 // Deleting, so check the parent is already linked to the target, and remove the link.
@@ -273,7 +274,8 @@ class tool_uploadenrolmentmethods_processor {
                 $instancemetacheck = array(
                     'courseid' => $parent->id,
                     'customint1' => $target->id,
-                    'enrol' => $method
+                    'enrol' => $method,
+                    'roleid' => $roleid
                 );
 
                 $instancenewparams = array(

@@ -1,0 +1,5 @@
+operation,method,shortname,metacohort,disabled,group,role
+add,cohort,C109,Cohort1,0,Cohort group 1,editingteacher
+upd,cohort,C109,Cohort1,1,UndefinedRole,undefined
+add,cohort,C109,Cohort2,1,StudentRole,
+add,cohort,C109,Cohort2,0,TutorRole,teacher

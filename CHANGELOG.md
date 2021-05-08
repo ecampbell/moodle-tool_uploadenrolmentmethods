@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.3.3] - 2021-05-08
+### Added
+- Allow same cohort or meta course to be added with different role
+
 ## [1.3.2] - 2020-12-08
 ### Added
 - Entire number is needed in Moodle version number
