@@ -76,9 +76,9 @@ if ($data = $form->get_data()) {
     $readcount = $cir->load_csv_content($content, $data->encoding, $data->delimiter_name);
     unset($content);
     if ($readcount === false) {
-        print_error('csvfileerror', 'tool_uploadcourse', $url, $cir->get_error());
+        throw new \moodle_exception(get_string('csvfileerror', 'tool_uploadcourse', $url, $cir->get_error()));
     } else if ($readcount == 0) {
-        print_error('csvemptyfile', 'error', $url, $cir->get_error());
+        throw new \moodle_exception(get_string('csvemptyfile', 'error', $url, $cir->get_error()));
     }
 
     // We've got a live file with some entries, so process it.

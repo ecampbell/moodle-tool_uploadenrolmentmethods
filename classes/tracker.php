@@ -79,6 +79,7 @@ class tool_uploadenrolmentmethods_tracker {
      * Constructor.
      *
      * @param int $outputmode desired output mode.
+     * @param bool $outcomecol include outcome column.
      */
     public function __construct($outputmode = self::NO_OUTPUT, bool $outcomecol = false) {
         $this->outputmode = $outputmode;

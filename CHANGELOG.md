@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.3.4] - 2021-08-02
+### Added
+- Clean up code to improve style and conform to latest conventions
+
 ## [1.3.3] - 2021-05-08
 ### Added
 - Allow same cohort or meta course to be added with different role
