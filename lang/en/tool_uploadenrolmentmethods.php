@@ -60,3 +60,5 @@ $string['result']                = 'Result';
 $string['results']               = 'Upload enrolment methods results';
 $string['targetisparent']        = 'Method is a parent of the course, so cannot be added as its target.';
 $string['targetnotfound']        = 'Unknown course.';
+$string['uploadenrolmentmethods:add'] = 'Add/Upload enrolment methods';
+$string['uploadenrolmentmethods:delete'] = 'Delete enrolment methods';
