@@ -98,7 +98,8 @@ class tool_uploadenrolmentmethods_processor {
             );
         $tracker->start($reportheadings, true);
 
-        $trace = new null_progress_trace();
+        // Trace debug messages.
+        $trace = new text_progress_trace();
         // Initialise some counters to summarise the results.
         $total = 0;
         $created = 0;
@@ -120,6 +121,9 @@ class tool_uploadenrolmentmethods_processor {
         // Course roles lookup cache.
         $rolecache = uu_allowed_roles_cache();
 
+        // Check if Profile fields method is installed.
+        $profilefieldsinstalled = array_key_exists('attributes', core_plugin_manager::instance()->get_plugins_of_type('enrol'));
+
         // Loop through each row of the file.
         while ($line = $this->cir->next()) {
             $this->linenb++;
@@ -130,7 +134,7 @@ class tool_uploadenrolmentmethods_processor {
             $op = $data['operation'];
             $method = $data['method'];
             $targetshortname = $data['shortname'];
-            $parentid = $data['metacohort'];
+            $sourcelabel = $data['metacohort'];
             $disabledstatus = $data['disabled'];
             $groupname = $data['group'];
             // Handle optional role field, if blank, use 'student' as the default.
@@ -139,12 +143,16 @@ class tool_uploadenrolmentmethods_processor {
                 $rolename = $data['role'];
                 $messagerow['role'] = $rolename;
             }
+            if (isset($data['profilefields']) && $data['profilefields'] !== '' ) {
+                $profilefields = $data['profilefields'];
+                $messagerow['profilefields'] = $profilefields;
+            }
 
             // Add line-specific reporting message strings.
             $messagerow['line'] = $this->linenb;
             $messagerow['methodname'] = get_string('pluginname', 'enrol_' . $method);
             $messagerow['shortname'] = $targetshortname;
-            $messagerow['metacohort'] = $parentid;
+            $messagerow['metacohort'] = $sourcelabel;
             $messagerow['groupname'] = $groupname;
 
             if ($op == 'add') {
@@ -167,12 +175,13 @@ class tool_uploadenrolmentmethods_processor {
                 continue;
             }
             // Check we've got a valid method.
-            if (!in_array($method, array('meta', 'cohort'))) {
+            if (!in_array($method, array('meta', 'cohort', 'attributes'))) {
                 $errors++;
                 $messagerow['result'] = get_string('invalidmethod', 'tool_uploadenrolmentmethods');
                 $tracker->output($messagerow, false);
                 continue;
             }
+
             // Check the requested enrolment method is enabled.
             if ($method == 'meta' && !enrol_is_enabled('meta')) {
                 $errors++;
@@ -187,7 +196,29 @@ class tool_uploadenrolmentmethods_processor {
                     get_string('pluginname', 'enrol_cohort'));
                 $tracker->output($messagerow, false);
                 continue;
+            } else if ($method == 'attributes') {
+                // Check the attributes profile fields method is installed and enabled.
+                if (!$profilefieldsinstalled) {
+                    // Not installed, so skip this line.
+                    $errors++;
+                    $messagerow['result'] = get_string('attributesnotinstalled', 'tool_uploadenrolmentmethods');
+                    $tracker->output($messagerow, false);
+                    continue;
+                } else if (!enrol_is_enabled('attributes')) {
+                    // Installed but not enabled, so skip this line.
+                    $errors++;
+                    $messagerow['result'] = get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods',
+                        get_string('pluginname', 'enrol_attributes'));
+                    $tracker->output($messagerow, false);
+                    continue;
+                }
+
+                // If using attributes, include its class.
+                global $CFG;
+
+                require_once($CFG->dirroot.'/enrol/attributes/lib.php');
             }
+
 
             // Check the target course we're assigning the method to exists.
             if (!$target = $DB->get_record('course', array('shortname' => $targetshortname))) {
@@ -198,15 +229,22 @@ class tool_uploadenrolmentmethods_processor {
             }
             $messagerow['courseid'] = $target->id;
             // Check the parent metacourse we're assigning exists.
-            if ($method == 'meta' && !($parent = $DB->get_record('course', array('shortname' => $parentid)))) {
+            if ($method == 'meta' && !($parent = $DB->get_record('course', array('shortname' => $sourcelabel)))) {
                 $errors++;
                 $messagerow['result'] = get_string('parentnotfound', 'tool_uploadenrolmentmethods');
                 $tracker->output($messagerow, false);
                 continue;
-            } else if ($method == 'cohort' && (!$parent = $DB->get_record('cohort', array('idnumber' => $parentid)))) {
+            } else if ($method == 'cohort' && (!$parent = $DB->get_record('cohort', array('idnumber' => $sourcelabel)))) {
                 // Check the cohort we're syncing exists.
                 $errors++;
                 $messagerow['result'] = get_string('cohortnotfound', 'tool_uploadenrolmentmethods');
+                $tracker->output($messagerow, false);
+                continue;
+            } else if ($method == 'attributes' && $op != 'add' &&
+                        (!$parent = $DB->get_record('enrol', array('courseid' => $target->id, 'name' => $sourcelabel)))) {
+                // Check the enrolment method we're processing exists.
+                $errors++;
+                $messagerow['result'] = get_string('attributesnotfound', 'tool_uploadenrolmentmethods');
                 $tracker->output($messagerow, false);
                 continue;
             }
@@ -232,9 +270,17 @@ class tool_uploadenrolmentmethods_processor {
                 'enrol' => $method,
                 'roleid' => $roleid
             );
+
             if ($op == 'del') {
                 // Deleting, so check the parent is already linked to the target, and remove the link.
-                // Skip the line if they're not.
+                // Skip the line if they're not linked.
+
+                // Handle the special case of profile fields, by including the method name.
+                // TODO: the name may not be unique, but we assume it is for the moment.
+                if ($method == 'attributes') {
+                    $instanceparams['name'] = $sourcelabel;
+                }
+
                 if ($instance = $DB->get_record('enrol', $instanceparams)) {
                     $enrol->delete_instance($instance);
                     $deleted++;
@@ -251,6 +297,12 @@ class tool_uploadenrolmentmethods_processor {
             } else if ($op == 'upd') {
                 // Updating, so check the parent is already linked to the target, and change the status.
                 // Skip the line if they're not.
+
+                // TODO: the name may not be unique, but we assume it is for the moment.
+                if ($method == 'attributes') {
+                    $instanceparams['name'] = $sourcelabel;
+                    unset($instanceparams['customint1']);
+                }
                 if ($instance = $DB->get_record('enrol', $instanceparams)) {
                     // Found a valid  instance, so  enable or disable it.
                     $messagerow['instancename'] = $enrol->get_instance_name($instance);
@@ -265,7 +317,69 @@ class tool_uploadenrolmentmethods_processor {
                     $tracker->output($messagerow, true);
                 } else {
                     $errors++;
-                    $messagerow['result'] = get_string('reldoesntexist', 'tool_uploadenrolmentmethods');
+                    $errordata = "sourcelabel: " . $sourcelabel . "; instanceparams: " . print_r($instanceparams, true) . "; instance:" . print_r($instance, true);
+                    $this->debug_write($errordata, "em1");
+                    $messagerow['result'] = get_string('reldoesntexist', 'tool_uploadenrolmentmethods', $errordata);
+                    $tracker->output($messagerow, false);
+                }
+            } else if ($op == 'add' && $method == 'attributes') {
+                // Special case for Profile fields method.
+                $instancemetacheck = array(
+                    'courseid' => $parent->id,
+                    'customint1' => $target->id,
+                    'enrol' => $method,
+                    'roleid' => $roleid
+                );
+
+                $instancenewparams = array(
+                    'customint1' => $parent->id,
+                    'roleid' => $roleid
+                );
+
+                // If method members should be added to a group, create it or get its ID.
+                if ($groupname != '') {
+                    $instancenewparams['customint2'] = uploadenrolmentmethods_get_group($target->id, $groupname);
+                }
+
+                if ($method == 'meta' && ($instance = $DB->get_record('enrol', $instancemetacheck))) {
+                    $errors++;
+                    $messagerow['result'] = get_string('targetisparent', 'tool_uploadenrolmentmethods');
+                    $tracker->output($messagerow, false);
+                } else if ($instance = $DB->get_record('enrol', $instanceparams)) {
+                    // This is a duplicate, skip it.
+                    $errors++;
+                    $messagerow['result'] = get_string('relalreadyexists', 'tool_uploadenrolmentmethods');
+                    $tracker->output($messagerow, false);
+                } else if ($instanceid = $enrol->add_instance($target, $instancenewparams)) {
+                    // Successfully added a valid new instance, so now instantiate it.
+                    // First synchronise the enrolment.
+                    if ($method == 'meta') {
+                        enrol_meta_sync($instancenewparams['customint1']);
+                    } else if ($method == 'cohort') {
+                        $cohorttrace = new null_progress_trace();
+                        enrol_cohort_sync($cohorttrace, $target->id);
+                        $cohorttrace->finished();
+                    } else if ($method == 'attributes') {
+                        // Insert the JSON string describing the enrolment conditions.
+                        $instancenewparams['customtext1'] = $sourcelabel;
+                        // Enrol_attributes_sync($instancenewparams['customint1']).
+
+                    }
+
+                    // Is it initially disabled?
+                    if ($disabledstatus == 1) {
+                        $instance = $DB->get_record('enrol', array('id' => $instanceid));
+                        $enrol->update_status($instance, ENROL_INSTANCE_DISABLED);
+                        $messagerow['status'] = get_string('statusdisabled', 'enrol_manual');
+                    }
+
+                    $created++;
+                    $messagerow['result'] = get_string('eventenrolinstancecreated', 'enrol');
+                    $tracker->output($messagerow, true);
+                } else {
+                    // Instance not added for some reason, so report an error and go to the next line.
+                    $errors++;
+                    $messagerow['result'] = get_string('reladderror', 'tool_uploadenrolmentmethods');
                     $tracker->output($messagerow, false);
                 }
             } else if ($op == 'add') {
@@ -306,6 +420,11 @@ class tool_uploadenrolmentmethods_processor {
                         $cohorttrace = new null_progress_trace();
                         enrol_cohort_sync($cohorttrace, $target->id);
                         $cohorttrace->finished();
+                    } else if ($method == 'attributes') {
+                        // Insert the JSON string describing the enrolment conditions.
+                        $instancenewparams['customtext1'] = $sourcelabel;
+                        // Enrol_attributes_sync($instancenewparams['customint1']).
+
                     }
 
                     // Is it initially disabled?
@@ -381,6 +500,33 @@ class tool_uploadenrolmentmethods_processor {
             throw new moodle_exception('cannotreadtmpfile', 'error');
         } else if (count($this->columns) < 2) {
             throw new moodle_exception('csvfewcolumns', 'error');
+        }
+    }
+    /**
+     * Write contents to a file for debugging purposes
+     *
+     * @param string $content text to save
+     * @param string $prefix file prefix
+     * @return void
+     */
+    public function debug_write(string $content, string $prefix) {
+        global $CFG;
+
+        if (debugging(null, DEBUG_DEVELOPER)) {
+            $tempxmlfilename = tempnam($CFG->tempdir, $prefix);
+            file_put_contents($tempxmlfilename, $content);
+        }
+    }
+
+    /**
+     * Delete temporary files if debugging disabled
+     *
+     * @param string $filename name of file to be deleted
+     * @return void
+     */
+    public function debug_unlink($filename) {
+        if (!debugging(null, DEBUG_DEVELOPER)) { // Not Parenthesis debugging(null, DEBUG_DEVELOPER) parenthesis.
+            unlink($filename);
         }
     }
 }

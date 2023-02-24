@@ -24,8 +24,6 @@
 
 namespace tool_uploadenrolmentmethods\privacy;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Privacy Subsystem for tool_uploadenrolmentmethods implementing null_provider.
  *
