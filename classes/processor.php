@@ -121,6 +121,10 @@ class tool_uploadenrolmentmethods_processor {
         // Course roles lookup cache.
         $rolecache = uu_allowed_roles_cache();
 
+        // Define some class variables.
+        $target = new stdClass();
+        $parent = new stdClass();
+
         // Check if Profile fields method is installed.
         $attributesinstalled = array_key_exists('attributes', core_plugin_manager::instance()->get_plugins_of_type('enrol'));
 
@@ -232,12 +236,14 @@ class tool_uploadenrolmentmethods_processor {
             if ($method == 'meta' && !($parent = $DB->get_record('course', array('shortname' => $sourcelabel)))) {
                 $errors++;
                 $messagerow['result'] = get_string('parentnotfound', 'tool_uploadenrolmentmethods');
+                $messagerow['parentid'] = $parent->id;
                 $tracker->output($messagerow, false);
                 continue;
             } else if ($method == 'cohort' && (!$parent = $DB->get_record('cohort', array('idnumber' => $sourcelabel)))) {
                 // Check the cohort we're syncing exists.
                 $errors++;
                 $messagerow['result'] = get_string('cohortnotfound', 'tool_uploadenrolmentmethods');
+                $messagerow['parentid'] = $parent->id;
                 $tracker->output($messagerow, false);
                 continue;
             } else if ($method == 'attributes' && $op != 'add' &&
@@ -261,7 +267,6 @@ class tool_uploadenrolmentmethods_processor {
             }
 
             $messagerow['targetid'] = $target->id;
-            $messagerow['parentid'] = $parent->id;
 
             $enrol = enrol_get_plugin($method);
 
@@ -325,16 +330,11 @@ class tool_uploadenrolmentmethods_processor {
                 }
             } else if ($op == 'add' && $method == 'attributes') {
                 // Special case for Profile fields method.
-                $instancemetacheck = array(
-                    'courseid' => $parent->id,
-                    'customint1' => $target->id,
-                    'enrol' => $method,
-                    'roleid' => $roleid
-                );
-
                 $instancenewparams = array(
                     'customint1' => $parent->id,
-                    'roleid' => $roleid
+                    'roleid' => $roleid,
+                    'name' => $sourcelabel,
+                    'customtext1' => $attributes
                 );
 
                 // If method members should be added to a group, create it or get its ID.
@@ -342,11 +342,7 @@ class tool_uploadenrolmentmethods_processor {
                     $instancenewparams['customint2'] = uploadenrolmentmethods_get_group($target->id, $groupname);
                 }
 
-                if ($method == 'meta' && ($instance = $DB->get_record('enrol', $instancemetacheck))) {
-                    $errors++;
-                    $messagerow['result'] = get_string('targetisparent', 'tool_uploadenrolmentmethods');
-                    $tracker->output($messagerow, false);
-                } else if ($instance = $DB->get_record('enrol', $instanceparams)) {
+                if ($instance = $DB->get_record('enrol', $instanceparams)) {
                     // This is a duplicate, skip it.
                     $errors++;
                     $messagerow['result'] = get_string('relalreadyexists', 'tool_uploadenrolmentmethods');
@@ -354,18 +350,9 @@ class tool_uploadenrolmentmethods_processor {
                 } else if ($instanceid = $enrol->add_instance($target, $instancenewparams)) {
                     // Successfully added a valid new instance, so now instantiate it.
                     // First synchronise the enrolment.
-                    if ($method == 'meta') {
-                        enrol_meta_sync($instancenewparams['customint1']);
-                    } else if ($method == 'cohort') {
-                        $cohorttrace = new null_progress_trace();
-                        enrol_cohort_sync($cohorttrace, $target->id);
-                        $cohorttrace->finished();
-                    } else if ($method == 'attributes') {
-                        // Insert the JSON string describing the enrolment conditions.
-                        $instancenewparams['customtext1'] = $sourcelabel;
-                        // Enrol_attributes_sync($instancenewparams['customint1']).
-
-                    }
+                    // Insert the JSON string describing the enrolment conditions.
+                    $instancenewparams['customtext1'] = $sourcelabel;
+                    // Enrol_attributes_sync($instancenewparams['customint1']).
 
                     // Is it initially disabled?
                     if ($disabledstatus == 1) {
@@ -421,11 +408,6 @@ class tool_uploadenrolmentmethods_processor {
                         $cohorttrace = new null_progress_trace();
                         enrol_cohort_sync($cohorttrace, $target->id);
                         $cohorttrace->finished();
-                    } else if ($method == 'attributes') {
-                        // Insert the JSON string describing the enrolment conditions.
-                        $instancenewparams['customtext1'] = $sourcelabel;
-                        // Enrol_attributes_sync($instancenewparams['customint1']).
-
                     }
 
                     // Is it initially disabled?
