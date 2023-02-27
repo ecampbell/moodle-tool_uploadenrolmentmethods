@@ -122,7 +122,7 @@ class tool_uploadenrolmentmethods_processor {
         $rolecache = uu_allowed_roles_cache();
 
         // Check if Profile fields method is installed.
-        $profilefieldsinstalled = array_key_exists('attributes', core_plugin_manager::instance()->get_plugins_of_type('enrol'));
+        $attributesinstalled = array_key_exists('attributes', core_plugin_manager::instance()->get_plugins_of_type('enrol'));
 
         // Loop through each row of the file.
         while ($line = $this->cir->next()) {
@@ -143,9 +143,9 @@ class tool_uploadenrolmentmethods_processor {
                 $rolename = $data['role'];
                 $messagerow['role'] = $rolename;
             }
-            if (isset($data['profilefields']) && $data['profilefields'] !== '' ) {
-                $profilefields = $data['profilefields'];
-                $messagerow['profilefields'] = $profilefields;
+            if (isset($data['attributes']) && $data['attributes'] !== '' ) {
+                $attributes = $data['attributes'];
+                $messagerow['attributes'] = $attributes;
             }
 
             // Add line-specific reporting message strings.
@@ -198,10 +198,10 @@ class tool_uploadenrolmentmethods_processor {
                 continue;
             } else if ($method == 'attributes') {
                 // Check the attributes profile fields method is installed and enabled.
-                if (!$profilefieldsinstalled) {
+                if (!$attributesinstalled) {
                     // Not installed, so skip this line.
                     $errors++;
-                    $messagerow['result'] = get_string('attributesnotinstalled', 'tool_uploadenrolmentmethods');
+                    $messagerow['result'] = get_string('attributesnotinstalled', 'tool_uploadenrolmentmethods', $sourcelabel);
                     $tracker->output($messagerow, false);
                     continue;
                 } else if (!enrol_is_enabled('attributes')) {
@@ -219,7 +219,6 @@ class tool_uploadenrolmentmethods_processor {
                 require_once($CFG->dirroot.'/enrol/attributes/lib.php');
             }
 
-
             // Check the target course we're assigning the method to exists.
             if (!$target = $DB->get_record('course', array('shortname' => $targetshortname))) {
                 $errors++;
@@ -228,7 +227,8 @@ class tool_uploadenrolmentmethods_processor {
                 continue;
             }
             $messagerow['courseid'] = $target->id;
-            // Check the parent metacourse we're assigning exists.
+
+            // Check the parent metacourse or cohort we're assigning exists.
             if ($method == 'meta' && !($parent = $DB->get_record('course', array('shortname' => $sourcelabel)))) {
                 $errors++;
                 $messagerow['result'] = get_string('parentnotfound', 'tool_uploadenrolmentmethods');
@@ -243,13 +243,14 @@ class tool_uploadenrolmentmethods_processor {
             } else if ($method == 'attributes' && $op != 'add' &&
                         (!$parent = $DB->get_record('enrol', array('courseid' => $target->id, 'name' => $sourcelabel)))) {
                 // Check the enrolment method we're processing exists.
+                // Unfortunately, profile field method names don't have to be unique, so this is a partial test.
                 $errors++;
-                $messagerow['result'] = get_string('attributesnotfound', 'tool_uploadenrolmentmethods');
+                $messagerow['result'] = get_string('attributesnotfound', 'tool_uploadenrolmentmethods', $sourcelabel);
                 $tracker->output($messagerow, false);
                 continue;
             }
 
-            // Check we have a valid role.
+            // Check that a valid role is specified.
             if (!array_key_exists($rolename, $rolecache)) {
                 $errors++;
                 $messagerow['result'] = get_string('unknownrole', 'error', $rolename);
