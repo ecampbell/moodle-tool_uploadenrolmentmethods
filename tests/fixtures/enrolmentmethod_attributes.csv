@@ -1,4 +1,4 @@
 operation,method,shortname,metacohort,disabled,group,role,attributes
-add,attributes,C101,Programme TA_ETELE_C P2 (RG),0,Meta Group 1,student,"{""rules"":[{""param"":""programme"",""value"":""TA_ETELE_C""},{""param"":""yearatt"",""value"":""P2"",""cond_op"":""and""},{""param"":""regcode"",""value"":""RG"",""cond_op"":""and""}],""groups"":""Group A""}"
-upd,attributes,C101,Programme TA_ETELE_C P1 (RG),1,,,
-upd,attributes,C101,Programme TA_ETELE_C P1 (EL),0,,,
+add,attributes,C101,Programme ZZ_MECHENG_B F1 (RG),0,Meta Group 1,student,"{""rules"":[{""param"":""programme"",""value"":""ZZ_MECHENG_B""},{""param"":""yearatt"",""value"":""F1"",""cond_op"":""and""},{""param"":""regcode"",""value"":""RG"",""cond_op"":""and""}],""groups"":""Group A""}"
+upd,attributes,C101,Programme ZZ_MECHENG_B P2 (RG),1,,,
+upd,attributes,C101,Programme ZZ_MECHENG_B P1 (EL),0,,,
