@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.4.0] - 2023-03-03
+### Added
+- Support 'attributes' enrolment method
+
 ## [1.3.4] - 2021-08-02
 ### Added
 - Clean up code to improve style and conform to latest conventions

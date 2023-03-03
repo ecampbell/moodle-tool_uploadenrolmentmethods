@@ -186,44 +186,31 @@ class tool_uploadenrolmentmethods_processor {
                 continue;
             }
 
-            // Check the requested enrolment method is enabled.
-            if ($method == 'meta' && !enrol_is_enabled('meta')) {
-                $errors++;
-                $messagerow['result'] = get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods',
-                    get_string('pluginname', 'enrol_meta'));
-                $tracker->output($messagerow, false);
-                continue;
-            } else if ($method == 'cohort' && !enrol_is_enabled('cohort')) {
-                // Check the cohort sync enrolment method is enabled.
-                $errors++;
-                $messagerow['result'] = get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods',
-                    get_string('pluginname', 'enrol_cohort'));
-                $tracker->output($messagerow, false);
-                continue;
-            } else if ($method == 'attributes') {
-                // Check the attributes profile fields method is installed and enabled.
+            // If using the attributes profile fields method, check if it is installed.
+            if ($method == 'attributes') {
                 if (!$attributesinstalled) {
                     // Not installed, so skip this line.
                     $errors++;
                     $messagerow['result'] = get_string('attributesnotinstalled', 'tool_uploadenrolmentmethods', $sourcelabel);
                     $tracker->output($messagerow, false);
                     continue;
-                } else if (!enrol_is_enabled('attributes')) {
-                    // Installed but not enabled, so skip this line.
-                    $errors++;
-                    $messagerow['result'] = get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods',
-                        get_string('pluginname', 'enrol_attributes'));
-                    $tracker->output($messagerow, false);
-                    continue;
+                } else {
+                    // Installed, so include its class.
+                    global $CFG;
+                    require_once($CFG->dirroot.'/enrol/attributes/lib.php');
                 }
-
-                // If using attributes, include its class.
-                global $CFG;
-
-                require_once($CFG->dirroot.'/enrol/attributes/lib.php');
             }
 
-            // Check the target course we're assigning the method to exists.
+            // Check the enrolment method is enabled.
+            if (!enrol_is_enabled($method)) {
+                $errors++;
+                $messagerow['result'] = get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods',
+                    get_string('pluginname', 'enrol_' . $method));
+                $tracker->output($messagerow, false);
+                continue;
+            }
+
+            // Check that the target course we're assigning the method to exists.
             if (!$target = $DB->get_record('course', array('shortname' => $targetshortname))) {
                 $errors++;
                 $messagerow['result'] = get_string('targetnotfound', 'tool_uploadenrolmentmethods');
@@ -232,7 +219,7 @@ class tool_uploadenrolmentmethods_processor {
             }
             $messagerow['courseid'] = $target->id;
 
-            // Check the parent metacourse or cohort we're assigning exists.
+            // Check that the parent metacourse or cohort we're assigning exists.
             if ($method == 'meta' && !($parent = $DB->get_record('course', array('shortname' => $sourcelabel)))) {
                 $errors++;
                 $messagerow['result'] = get_string('parentnotfound', 'tool_uploadenrolmentmethods');
@@ -246,14 +233,28 @@ class tool_uploadenrolmentmethods_processor {
                 $messagerow['parentid'] = $parent->id;
                 $tracker->output($messagerow, false);
                 continue;
-            } else if ($method == 'attributes' && $op != 'add' &&
-                        (!$parent = $DB->get_record('enrol', array('courseid' => $target->id, 'name' => $sourcelabel)))) {
-                // Check the enrolment method we're processing exists.
-                // Unfortunately, profile field method names don't have to be unique, so this is a partial test.
-                $errors++;
-                $messagerow['result'] = get_string('attributesnotfound', 'tool_uploadenrolmentmethods', $sourcelabel);
-                $tracker->output($messagerow, false);
-                continue;
+            } else if ($method == 'attributes') {
+                // The method must exist for updates and deletions, and not for additions.
+                // Attributes method names don't actually have to be unique, but we don't allow it.
+                $attrecords = $DB->get_records('enrol', array('courseid' => $target->id, 'name' => $sourcelabel));
+                if ($op == 'add' && count($attrecords) > 0) {
+                    // Check the method doesn't already exist, even though technically its allowed.
+                    $errors++;
+                    $messagerow['result'] = get_string('relalreadyexists', 'tool_uploadenrolmentmethods');
+                    $tracker->output($messagerow, false);
+                    continue;
+                } else if ($op != 'add' && count($attrecords) != 1) {
+                    // Check the enrolment method we're processing exists.
+                    $errors++;
+                    $messagerow['result'] = get_string('attributesnotfound', 'tool_uploadenrolmentmethods', $sourcelabel);
+                    $tracker->output($messagerow, false);
+                    continue;
+                }
+                if (count($attrecords) == 0) {
+                    $parent->id = null; // Set the Parent ID just to avoid an error message.
+                } else {
+                    $parent = $DB->get_record('enrol', array('courseid' => $target->id, 'name' => $sourcelabel));
+                }
             }
 
             // Check that a valid role is specified.
@@ -265,6 +266,8 @@ class tool_uploadenrolmentmethods_processor {
             } else {
                 $roleid = $rolecache[$rolename]->id;
             }
+
+            // Checks are mostly now done, so let's get to work.
 
             $messagerow['targetid'] = $target->id;
 
@@ -316,6 +319,7 @@ class tool_uploadenrolmentmethods_processor {
                         $messagerow['status'] = get_string('statusdisabled', 'enrol_manual');
                         $enrol->update_status($instance, ENROL_INSTANCE_DISABLED);
                     } else {
+                        $messagerow['status'] = get_string('statusenabled', 'enrol_manual');
                         $enrol->update_status($instance, ENROL_INSTANCE_ENABLED);
                     }
                     $updated++;
@@ -323,9 +327,7 @@ class tool_uploadenrolmentmethods_processor {
                     $tracker->output($messagerow, true);
                 } else {
                     $errors++;
-                    $errordata = "sourcelabel: " . $sourcelabel . "; instanceparams: " . print_r($instanceparams, true) . "; instance:" . print_r($instance, true);
-                    $this->debug_write($errordata, "em1");
-                    $messagerow['result'] = get_string('reldoesntexist', 'tool_uploadenrolmentmethods', $errordata);
+                    $messagerow['result'] = get_string('reldoesntexist', 'tool_uploadenrolmentmethods');
                     $tracker->output($messagerow, false);
                 }
             } else if ($op == 'add' && $method == 'attributes') {
@@ -337,10 +339,7 @@ class tool_uploadenrolmentmethods_processor {
                     'customtext1' => $attributes
                 );
 
-                // If method members should be added to a group, create it or get its ID.
-                if ($groupname != '') {
-                    $instancenewparams['customint2'] = uploadenrolmentmethods_get_group($target->id, $groupname);
-                }
+                // Ignore the group field in the CSV file, as it is handled inside the 'attributes' string.
 
                 if ($instance = $DB->get_record('enrol', $instanceparams)) {
                     // This is a duplicate, skip it.
@@ -352,7 +351,6 @@ class tool_uploadenrolmentmethods_processor {
                     // First synchronise the enrolment.
                     // Insert the JSON string describing the enrolment conditions.
                     $instancenewparams['customtext1'] = $sourcelabel;
-                    // Enrol_attributes_sync($instancenewparams['customint1']).
 
                     // Is it initially disabled?
                     if ($disabledstatus == 1) {
