@@ -16,27 +16,25 @@ Feature: Linking metacourses and target courses by uploading a CSV file.
     Given the following "course enrolments" exist:
       | user      | course | role           |
       | student1  | C101   | student        |
-      | teacher1  | C101   | editingteacher |
     Given I log in as "admin"
-    And I navigate to "Manage enrol plugins" node in "Site administration > Plugins > Enrolments"
+    And I navigate to "Plugins > Manage enrol plugins" in site administration
     And I click on "Enable" "link" in the "Course meta link" "table_row"
     And I am on course index
 
-  @_file_upload
+  @javascript @_file_upload
   Scenario: Administrator can upload a CSV file using the upload enrolment methods plugin
-    When I log in as "admin"
-    And I navigate to "Upload enrolment methods" node in "Site administration > Plugins > Enrolments"
-    And I upload "admin/tool/uploadenrolmentmethods/tests/fixtures/enrolmentmethod_meta.csv" file to "Upload this file" filemanager
+    Given I log in as "admin"
+    And I navigate to "Plugins > Upload enrolment methods" in site administration
+    When I upload "admin/tool/uploadenrolmentmethods/tests/fixtures/enrolmentmethod_meta.csv" file to "File" filemanager
     And I click on "id_submitbutton" "button"
-    And I expand "My courses" node
-    And I follow "C102"
-    And I click on "Participants"
+    When I am on the "C102" "course" page logged in as "admin"
+    And I follow "Participants"
     Then I should see "Student1"
     And I should not see "Teacher1"
 
   Scenario: Warning should be displayed if meta enrolment is not activated
     Given I log in as "admin"
-    And I navigate to "Manage enrol plugins" node in "Site administration > Plugins > Enrolments"
+    And I navigate to "Plugins > Manage enrol plugins" in site administration
     And I click on "Disable" "link" in the "Course meta link" "table_row"
-    And I navigate to "Upload enrolment methods" node in "Site administration > Plugins > Enrolments"
-    Then I should see "Enrolment method ""Course meta link"": Disabled"
+    And I navigate to "Plugins > Upload enrolment methods" in site administration
+    And I should see "Enrolment method \"Course meta link\" disabled."

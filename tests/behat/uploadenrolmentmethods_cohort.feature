@@ -16,31 +16,29 @@ Feature: Linking cohorts and target courses by uploading a CSV file.
     Given the following "cohorts" exist:
       | name   | idnumber |
       | Cohort 1 | cohort1  |
-    Given the following "cohort enrolments" exist:
+    Given the following "cohort members" exist:
       | cohort  | user   |
       | cohort1 | student1 |
     Given I log in as "admin"
-    And I navigate to "Manage enrol plugins" node in "Site administration > Plugins > Enrolments"
+    And I navigate to "Plugins > Manage enrol plugins" in site administration
+    And I click on "Disable" "link" in the "Cohort sync" "table_row"
     And I click on "Enable" "link" in the "Cohort sync" "table_row"
     And I am on course index
 
-  @_file_upload
+  @javascript @_file_upload
   Scenario: Administrator can upload a CSV file using the upload enrolment methods plugin
     When I log in as "admin"
-    And I navigate to "Upload enrolment methods" node in "Site administration > Plugins > Enrolments"
-    And I upload "admin/tool/uploadenrolmentmethods/tests/fixtures/enrolmentmethod_cohort.csv" file to "Upload this file" filemanager
+    And I navigate to "Plugins > Upload enrolment methods" in site administration
+    And I upload "admin/tool/uploadenrolmentmethods/tests/fixtures/enrolmentmethod_cohort.csv" file to "File" filemanager
     And I click on "id_submitbutton" "button"
-    And I expand "My courses" node
-    And I follow "C102"
-    And I click on "Participants"
+    When I am on the "C101" "course" page logged in as "admin"
+    And I follow "Participants"
     Then I should see "Student1"
     And I should not see "Teacher1"
 
   Scenario: Warning should be displayed a message if cohort sync enrolment is not activated
     Given I log in as "admin"
-    And I navigate to "Manage enrol plugins" node in "Site administration > Plugins > Enrolments"
+    And I navigate to "Plugins > Manage enrol plugins" in site administration
     And I click on "Disable" "link" in the "Cohort sync" "table_row"
-    And I click on "Site administration"
-    And I click on "Plugins"
-    And I click on "Upload enrolment methods"
-    Then I should see "Enrolment method ""Cohort sync"": Disabled"
+    And I navigate to "Plugins > Upload enrolment methods" in site administration
+    Then I should see "Enrolment method \"Cohort sync\" disabled."

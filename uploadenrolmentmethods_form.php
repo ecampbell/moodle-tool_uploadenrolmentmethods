@@ -64,7 +64,7 @@ class uploadenrolmentmethods_form extends moodleform {
         $mform->addHelpButton('encoding', 'encoding', 'tool_uploadcourse');
 
         // Standard buttons.
-        $this->add_action_buttons(true, get_string('uploadthisfile'));
+        $this->add_action_buttons(true, get_string('uploadthisfile', 'tool_uploadenrolmentmethods'));
     }
 
     /**
