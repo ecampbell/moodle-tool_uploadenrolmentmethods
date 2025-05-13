@@ -43,7 +43,7 @@ class tool_uploadenrolmentmethods_processor {
     protected $cir;
 
     /** @var array CSV columns. */
-    protected $columns = array();
+    protected $columns = [];
 
     /** @var int line number. */
     protected $linenb = 0;
@@ -85,7 +85,7 @@ class tool_uploadenrolmentmethods_processor {
         }
 
         // Initialise the output heading row labels.
-        $reportheadings = array('line' => get_string('csvline', 'tool_uploadcourse'),
+        $reportheadings = ['line' => get_string('csvline', 'tool_uploadcourse'),
             'oplabel' => get_string('operation', 'tool_uploadenrolmentmethods'),
             'methodname' => get_string('enrolmentmethod', 'enrol'),
             'shortname' => get_string('shortnamecourse'),
@@ -94,8 +94,8 @@ class tool_uploadenrolmentmethods_processor {
             'groupname' => get_string('group'),
             'role' => get_string('role'),
             'status' => get_string('participationstatus', 'enrol'),
-            'result' => get_string('result', 'tool_uploadenrolmentmethods')
-            );
+            'result' => get_string('result', 'tool_uploadenrolmentmethods'),
+            ];
         $tracker->start($reportheadings, true);
 
         // Trace debug messages.
@@ -111,10 +111,10 @@ class tool_uploadenrolmentmethods_processor {
         core_php_time_limit::raise();
         raise_memory_limit(MEMORY_EXTRA);
 
-        $report = array();
+        $report = [];
 
         // Prepare reporting message strings.
-        $messagerow = array();
+        $messagerow = [];
         $messagerow['status'] = get_string('statusenabled', 'enrol_manual');
         $messagerow['role'] = 'student';
 
@@ -140,7 +140,10 @@ class tool_uploadenrolmentmethods_processor {
             $targetshortname = $data['shortname'];
             $sourcelabel = $data['metacohort'];
             $disabledstatus = $data['disabled'];
-            $groupname = $data['group'];
+            if (isset($data['group']) && $data['group'] !== '' ) {
+                $groupname = $data['group'];
+                $messagerow['group'] = $groupname;
+            }
             // Handle optional role field, if blank, use 'student' as the default.
             $rolename = 'student';
             if (isset($data['role']) && $data['role'] !== '' ) {
@@ -157,7 +160,6 @@ class tool_uploadenrolmentmethods_processor {
             $messagerow['methodname'] = get_string('pluginname', 'enrol_' . $method);
             $messagerow['shortname'] = $targetshortname;
             $messagerow['metacohort'] = $sourcelabel;
-            $messagerow['groupname'] = $groupname;
 
             if ($op == 'add') {
                 $messagerow['oplabel'] = get_string('add');
@@ -172,14 +174,14 @@ class tool_uploadenrolmentmethods_processor {
             // Need to check the line is valid. If not, add a message to the report and skip the line.
 
             // Check we've got a valid operation.
-            if (!in_array($op, array('add', 'del', 'upd'))) {
+            if (!in_array($op, ['add', 'del', 'upd'])) {
                 $errors++;
                 $messagerow['result'] = get_string('invalidop', 'tool_uploadenrolmentmethods');
                 $tracker->output($messagerow, false);
                 continue;
             }
             // Check we've got a valid method.
-            if (!in_array($method, array('meta', 'cohort', 'attributes'))) {
+            if (!in_array($method, ['meta', 'cohort', 'attributes'])) {
                 $errors++;
                 $messagerow['result'] = get_string('invalidmethod', 'tool_uploadenrolmentmethods');
                 $tracker->output($messagerow, false);
@@ -211,7 +213,7 @@ class tool_uploadenrolmentmethods_processor {
             }
 
             // Check that the target course we're assigning the method to exists.
-            if (!$target = $DB->get_record('course', array('shortname' => $targetshortname))) {
+            if (!$target = $DB->get_record('course', ['shortname' => $targetshortname])) {
                 $errors++;
                 $messagerow['result'] = get_string('targetnotfound', 'tool_uploadenrolmentmethods');
                 $tracker->output($messagerow, false);
@@ -220,13 +222,13 @@ class tool_uploadenrolmentmethods_processor {
             $messagerow['courseid'] = $target->id;
 
             // Check that the parent metacourse or cohort we're assigning exists.
-            if ($method == 'meta' && !($parent = $DB->get_record('course', array('shortname' => $sourcelabel)))) {
+            if ($method == 'meta' && !($parent = $DB->get_record('course', ['shortname' => $sourcelabel]))) {
                 $errors++;
                 $messagerow['result'] = get_string('parentnotfound', 'tool_uploadenrolmentmethods');
                 $messagerow['parentid'] = $parent->id;
                 $tracker->output($messagerow, false);
                 continue;
-            } else if ($method == 'cohort' && (!$parent = $DB->get_record('cohort', array('idnumber' => $sourcelabel)))) {
+            } else if ($method == 'cohort' && (!$parent = $DB->get_record('cohort', ['idnumber' => $sourcelabel]))) {
                 // Check the cohort we're syncing exists.
                 $errors++;
                 $messagerow['result'] = get_string('cohortnotfound', 'tool_uploadenrolmentmethods');
@@ -236,7 +238,7 @@ class tool_uploadenrolmentmethods_processor {
             } else if ($method == 'attributes') {
                 // The method must exist for updates and deletions, and not for additions.
                 // Attributes method names don't actually have to be unique, but we don't allow it.
-                $attrecords = $DB->get_records('enrol', array('courseid' => $target->id, 'name' => $sourcelabel));
+                $attrecords = $DB->get_records('enrol', ['courseid' => $target->id, 'name' => $sourcelabel]);
                 if ($op == 'add' && count($attrecords) > 0) {
                     // Check the method doesn't already exist, even though technically its allowed.
                     $errors++;
@@ -253,7 +255,7 @@ class tool_uploadenrolmentmethods_processor {
                 if (count($attrecords) == 0) {
                     $parent->id = null; // Set the Parent ID just to avoid an error message.
                 } else {
-                    $parent = $DB->get_record('enrol', array('courseid' => $target->id, 'name' => $sourcelabel));
+                    $parent = $DB->get_record('enrol', ['courseid' => $target->id, 'name' => $sourcelabel]);
                 }
             }
 
@@ -273,19 +275,19 @@ class tool_uploadenrolmentmethods_processor {
 
             $enrol = enrol_get_plugin($method);
 
-            $instanceparams = array(
+            $instanceparams = [
                 'courseid' => $target->id,
                 'customint1' => $parent->id,
                 'enrol' => $method,
-                'roleid' => $roleid
-            );
+                'roleid' => $roleid,
+            ];
 
             if ($op == 'del') {
                 // Deleting, so check the parent is already linked to the target, and remove the link.
                 // Skip the line if they're not linked.
 
                 // Handle the special case of profile fields, by including the method name.
-                // TODO: the name may not be unique, but we assume it is for the moment.
+                // Note: the instance name may not be unique, but we assume it is for the moment.
                 if ($method == 'attributes') {
                     $instanceparams['name'] = $sourcelabel;
                 }
@@ -307,7 +309,7 @@ class tool_uploadenrolmentmethods_processor {
                 // Updating, so check the parent is already linked to the target, and change the status.
                 // Skip the line if they're not.
 
-                // TODO: the name may not be unique, but we assume it is for the moment.
+                // Note: the instance name may not be unique, but we assume it is for the moment.
                 if ($method == 'attributes') {
                     $instanceparams['name'] = $sourcelabel;
                     unset($instanceparams['customint1']);
@@ -332,12 +334,12 @@ class tool_uploadenrolmentmethods_processor {
                 }
             } else if ($op == 'add' && $method == 'attributes') {
                 // Special case for Profile fields method.
-                $instancenewparams = array(
+                $instancenewparams = [
                     'customint1' => $parent->id,
                     'roleid' => $roleid,
                     'name' => $sourcelabel,
-                    'customtext1' => $attributes
-                );
+                    'customtext1' => $attributes,
+                ];
 
                 // Ignore the group field in the CSV file, as it is handled inside the 'attributes' string.
 
@@ -354,7 +356,7 @@ class tool_uploadenrolmentmethods_processor {
 
                     // Is it initially disabled?
                     if ($disabledstatus == 1) {
-                        $instance = $DB->get_record('enrol', array('id' => $instanceid));
+                        $instance = $DB->get_record('enrol', ['id' => $instanceid]);
                         $enrol->update_status($instance, ENROL_INSTANCE_DISABLED);
                         $messagerow['status'] = get_string('statusdisabled', 'enrol_manual');
                     }
@@ -371,20 +373,20 @@ class tool_uploadenrolmentmethods_processor {
             } else if ($op == 'add') {
                 // Adding, so check that the parent is not already linked to the target, and add them.
                 // Array of parameters to check if meta instance is circular.
-                $instancemetacheck = array(
+                $instancemetacheck = [
                     'courseid' => $parent->id,
                     'customint1' => $target->id,
                     'enrol' => $method,
-                    'roleid' => $roleid
-                );
+                    'roleid' => $roleid,
+                ];
 
-                $instancenewparams = array(
+                $instancenewparams = [
                     'customint1' => $parent->id,
-                    'roleid' => $roleid
-                );
+                    'roleid' => $roleid,
+                ];
 
                 // If method members should be added to a group, create it or get its ID.
-                if ($groupname != '') {
+                if (isset($groupname) && $groupname != '') {
                     $instancenewparams['customint2'] = uploadenrolmentmethods_get_group($target->id, $groupname);
                 }
 
@@ -410,7 +412,7 @@ class tool_uploadenrolmentmethods_processor {
 
                     // Is it initially disabled?
                     if ($disabledstatus == 1) {
-                        $instance = $DB->get_record('enrol', array('id' => $instanceid));
+                        $instance = $DB->get_record('enrol', ['id' => $instanceid]);
                         $enrol->update_status($instance, ENROL_INSTANCE_DISABLED);
                         $messagerow['status'] = get_string('statusdisabled', 'enrol_manual');
                     }
@@ -427,26 +429,26 @@ class tool_uploadenrolmentmethods_processor {
             }
         } // End of while loop.
 
-        $message = array(
+        $message = [
             get_string('methodstotal', 'tool_uploadenrolmentmethods', $total),
             get_string('methodscreated', 'tool_uploadenrolmentmethods', $created),
             get_string('methodsupdated', 'tool_uploadenrolmentmethods', $updated),
             get_string('methodsdeleted', 'tool_uploadenrolmentmethods', $deleted),
-            get_string('methodserrors', 'tool_uploadenrolmentmethods', $errors)
-        );
+            get_string('methodserrors', 'tool_uploadenrolmentmethods', $errors),
+        ];
 
         $tracker->finish();
         $tracker->results($message);
     }
 
     /**
-     * Parse a line to return an array(column => value)
+     * Parse a line to return an [column => value]
      *
      * @param array $line returned by csv_import_reader
      * @return array
      */
     protected function parse_line($line) {
-        $data = array();
+        $data = [];
         foreach ($line as $keynum => $value) {
             if (!isset($this->columns[$keynum])) {
                 // This should not happen.
@@ -465,10 +467,8 @@ class tool_uploadenrolmentmethods_processor {
      * @return void.
      */
     public function reset() {
-        $this->processstarted = false;
         $this->linenb = 0;
         $this->cir->init();
-        $this->errors = array();
     }
 
     /**

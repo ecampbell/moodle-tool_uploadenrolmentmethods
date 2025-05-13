@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['attributesnotinstalled'] = 'Enrolment method not installed: "{$a}".';
 $string['attributesnotfound'] = 'Enrolment method not found: "{$a}".';
+$string['attributesnotinstalled'] = 'Enrolment method not installed: "{$a}".';
 $string['cohortnotfound'] = 'Cohort not found.';
 $string['csvfile'] = '';
 $string['csvfile_help'] = 'The format of the CSV file is as follows:

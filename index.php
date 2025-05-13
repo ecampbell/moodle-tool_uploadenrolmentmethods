@@ -60,7 +60,7 @@ if ($CFG->branch >= 25) { // Moodle 2.5+.
 admin_externalpage_setup('tool_'.$pluginname); // Sets the navbar & expands navmenu.
 
 // Set up the form.
-$form = new uploadenrolmentmethods_form(null, array('fromdefault' => ''));
+$form = new uploadenrolmentmethods_form(null, ['fromdefault' => '']);
 if ($form->is_cancelled()) {
     redirect($homeurl);
 }
@@ -103,9 +103,9 @@ if ($data = $form->get_data()) {
         $displaymanageenrollink = 1;
     }
     if ($displaymanageenrollink) {
-        $manageenrolsurl = new moodle_url('/admin/settings.php', array('section' => 'manageenrols'));
+        $manageenrolsurl = new moodle_url('/admin/settings.php', ['section' => 'manageenrols']);
         $strmanage = get_string('manageenrols', 'enrol');
-        echo html_writer::tag('a', $strmanage, array('href' => $manageenrolsurl));
+        echo html_writer::tag('a', $strmanage, ['href' => $manageenrolsurl]);
     }
     $form->display();
     echo $OUTPUT->footer();

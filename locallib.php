@@ -35,8 +35,8 @@ function uploadenrolmentmethods_get_group($courseid, $groupname) {
     require_once($CFG->dirroot.'/group/lib.php');
 
     // Check to see if the group name already exists in this course.
-    if ($DB->record_exists('groups', array('name' => $groupname, 'courseid' => $courseid))) {
-        $group = $DB->get_record('groups', array('name' => $groupname, 'courseid' => $courseid));
+    if ($DB->record_exists('groups', ['name' => $groupname, 'courseid' => $courseid])) {
+        $group = $DB->get_record('groups', ['name' => $groupname, 'courseid' => $courseid]);
         return $group->id;
     }
     // The named group doesn't exist, so create a new one in the course.

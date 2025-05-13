@@ -24,22 +24,22 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
+$capabilities = [
 
-    'tool/uploadenrolmentmethods:delete' => array(
+    'tool/uploadenrolmentmethods:delete' => [
         'captype' => 'write',
         'riskbitmask' => RISK_DATALOSS,
         'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        )
-    ),
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
 
-    'tool/uploadenrolmentmethods:add' => array(
+    'tool/uploadenrolmentmethods:add' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-            'manager' => CAP_ALLOW
-        )
-    )
-);
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+];
