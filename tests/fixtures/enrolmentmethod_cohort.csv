@@ -1,2 +1,3 @@
+operation,method,shortname,metacohort,disabled,group
 add,cohort,C101,cohort1,0,Cohort group 1
 upd,cohort,C101,cohort1,1,

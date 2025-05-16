@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.4.1] - 2025-05-16
+### Added
+- Update for PHP 8 and code styling compatibility
+
 ## [1.4.0] - 2023-05-15
 ### Added
 - Support 'attributes' enrolment method, fix permissions strings
